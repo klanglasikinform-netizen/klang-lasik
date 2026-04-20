@@ -1,0 +1,2086 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ระบบนัดหมายตรวจตา LASIK — ศูนย์ตรวจและรักษาสายตา</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&family=Noto+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --primary:#0a3d6b;--pl:#1565a8;--accent:#00b8d9;--a2:#e8f4fd;--teal:#009fa8;
+  --ok:#22c55e;--err:#ef4444;--warn:#f59e0b;--purple:#7c3aed;
+  --bg:#f0f6ff;--sur:#fff;--sur2:#f7faff;
+  --tx:#0f172a;--tx2:#475569;--tx3:#94a3b8;--bd:#cbd5e1;
+  --sh:0 4px 24px rgba(10,61,107,0.10);--R:16px;--r:10px;
+  --line-green:#00B900;--line-dark:#00A000;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Sarabun','Noto Sans Thai',sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;}
+
+.hdr{background:linear-gradient(135deg,var(--primary) 0%,#0d5799 55%,var(--teal) 100%);position:sticky;top:0;z-index:200;box-shadow:0 2px 20px rgba(10,61,107,0.22);}
+.hdr-in{max-width:1160px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:0 24px;height:68px;}
+.logo{display:flex;align-items:center;gap:12px;}
+.logo-ic{width:42px;height:42px;background:rgba(255,255,255,0.15);border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:21px;}
+.logo-tx{color:#fff;} .logo-tx h1{font-size:16px;font-weight:800;line-height:1.2;} .logo-tx p{font-size:11.5px;opacity:.75;}
+.nav{display:flex;gap:8px;flex-wrap:wrap;}
+.nb{background:rgba(255,255,255,0.13);color:#fff;border:1.5px solid rgba(255,255,255,0.22);border-radius:8px;padding:7px 16px;font-size:13px;font-family:inherit;cursor:pointer;transition:all .2s;font-weight:600;}
+.nb:hover{background:rgba(255,255,255,0.25);}
+.nb.on{background:#fff;color:var(--primary);border-color:#fff;}
+
+.main{max-width:1160px;margin:0 auto;padding:28px 18px 60px;}
+.page{display:none;animation:fadeIn .25s ease;} .page.on{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+.hero{background:linear-gradient(135deg,var(--primary),var(--pl));border-radius:22px;padding:36px 44px;color:#fff;display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;gap:20px;position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;right:-50px;top:-50px;width:240px;height:240px;border-radius:50%;background:rgba(255,255,255,0.05);}
+.hero::after{content:'';position:absolute;right:55px;bottom:-70px;width:160px;height:160px;border-radius:50%;background:rgba(0,184,217,0.13);}
+.hero-t{font-size:25px;font-weight:800;margin-bottom:7px;}
+.hero-s{font-size:14.5px;opacity:.82;line-height:1.65;}
+.hero-btn{background:#fff;color:var(--primary);border:none;padding:13px 30px;border-radius:11px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s;box-shadow:0 4px 16px rgba(0,0,0,0.14);position:relative;z-index:1;white-space:nowrap;}
+.hero-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,0.18);}
+
+.stepper{display:flex;align-items:center;margin-bottom:28px;background:var(--sur);border-radius:var(--R);padding:18px 26px;box-shadow:var(--sh);}
+.stp{display:flex;align-items:center;gap:9px;flex:1;}
+.stp-n{width:32px;height:32px;border-radius:50%;font-weight:700;font-size:13.5px;display:flex;align-items:center;justify-content:center;background:var(--bd);color:var(--tx3);flex-shrink:0;transition:all .3s;}
+.stp.done .stp-n{background:var(--ok);color:#fff;}
+.stp.act .stp-n{background:var(--primary);color:#fff;box-shadow:0 0 0 4px rgba(10,61,107,0.15);}
+.stp-l{font-size:12.5px;color:var(--tx3);font-weight:500;}
+.stp.act .stp-l{color:var(--primary);font-weight:700;}
+.stp.done .stp-l{color:var(--ok);}
+.stp-line{flex:1;height:2px;background:var(--bd);margin:0 6px;border-radius:2px;}
+.stp-line.done{background:var(--ok);}
+
+.card{background:var(--sur);border-radius:var(--R);padding:26px;box-shadow:var(--sh);margin-bottom:18px;}
+.card-t{font-size:16.5px;font-weight:700;color:var(--primary);margin-bottom:18px;display:flex;align-items:center;gap:9px;flex-wrap:wrap;}
+
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}
+.fg{display:flex;flex-direction:column;gap:5px;}
+.fg label{font-size:13px;font-weight:600;color:var(--tx2);}
+.fg input,.fg select,.fg textarea{padding:10px 13px;border:1.5px solid var(--bd);border-radius:var(--r);font-size:14px;font-family:inherit;color:var(--tx);background:var(--sur2);transition:border-color .2s,box-shadow .2s;outline:none;}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(0,184,217,0.12);}
+.fg .em{font-size:11.5px;color:var(--err);display:none;margin-top:2px;}
+.fg.err .em{display:block;} .fg.err input,.fg.err select{border-color:var(--err);}
+
+.vision-block{background:var(--sur2);border:1.5px solid var(--bd);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:10px;}
+.vision-block-title{font-size:13px;font-weight:700;color:var(--primary);margin-bottom:4px;}
+.vision-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.vision-field{display:flex;flex-direction:column;gap:4px;}
+.vision-field label{font-size:12px;font-weight:600;color:var(--tx3);}
+.vision-field input{padding:8px 11px;border:1.5px solid var(--bd);border-radius:8px;font-size:13.5px;font-family:inherit;color:var(--tx);background:#fff;outline:none;transition:border-color .2s;}
+.vision-field input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(0,184,217,0.10);}
+.vision-unknown{display:flex;align-items:center;gap:8px;padding:7px 11px;background:#f1f5f9;border:1.5px solid var(--bd);border-radius:8px;cursor:pointer;transition:all .18s;font-size:13px;font-weight:500;color:var(--tx2);user-select:none;}
+.vision-unknown.on{background:#e8f0fb;border-color:var(--primary);color:var(--primary);}
+.vision-unknown input{width:15px;height:15px;accent-color:var(--primary);}
+.vision-hint{font-size:11.5px;color:var(--tx3);font-style:italic;}
+
+.chips{display:flex;flex-wrap:wrap;gap:9px;}
+.chip,.rchip{display:flex;align-items:center;gap:7px;cursor:pointer;background:var(--sur2);border:1.5px solid var(--bd);padding:8px 14px;border-radius:8px;font-size:13.5px;transition:all .18s;user-select:none;font-weight:500;}
+.chip input,.rchip input{display:none;}
+.chip:hover,.rchip:hover{border-color:var(--accent);background:var(--a2);}
+.chip.on,.rchip.on{border-color:var(--primary);background:#e8f0fb;color:var(--primary);font-weight:700;}
+.chip.dis,.rchip.dis{opacity:.4;cursor:not-allowed;pointer-events:none;background:#f1f5f9;}
+
+.other-input-wrap{margin-top:10px;display:none;}
+.other-input-wrap.show{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+.other-input-wrap input{padding:8px 13px;border:1.5px solid var(--bd);border-radius:8px;font-size:13.5px;font-family:inherit;color:var(--tx);background:#fff;outline:none;flex:1;min-width:160px;}
+.other-input-wrap input:focus{border-color:var(--accent);}
+
+.med-custom-wrap{margin-top:10px;display:none;}
+.med-custom-wrap.show{display:flex;flex-direction:column;gap:8px;}
+.med-custom-row{display:flex;gap:8px;align-items:center;}
+.med-custom-row input{padding:8px 13px;border:1.5px solid var(--bd);border-radius:8px;font-size:13.5px;font-family:inherit;color:var(--tx);background:#fff;outline:none;flex:1;}
+.med-custom-row input:focus{border-color:var(--accent);}
+.med-tag-list{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px;}
+.med-tag{display:inline-flex;align-items:center;gap:5px;background:#e8f0fb;color:var(--primary);border-radius:20px;padding:3px 10px;font-size:12.5px;font-weight:600;}
+.med-tag button{background:none;border:none;cursor:pointer;color:var(--primary);font-size:13px;line-height:1;padding:0 1px;}
+
+.cal-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.cal-title{font-size:16.5px;font-weight:700;color:var(--primary);}
+.cal-nav{display:flex;gap:7px;}
+.cal-nav button{width:34px;height:34px;border:1.5px solid var(--bd);background:#fff;border-radius:8px;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;transition:all .2s;color:var(--tx2);}
+.cal-nav button:hover{border-color:var(--accent);color:var(--accent);}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;}
+.cal-dn{text-align:center;font-size:12px;font-weight:700;color:var(--tx3);padding:5px 0;}
+.cal-d{aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:9px;cursor:pointer;font-size:13.5px;font-weight:500;border:1.5px solid transparent;transition:all .18s;position:relative;padding:2px;}
+.cal-d.emp{pointer-events:none;}
+.cal-d.na{color:var(--tx3);pointer-events:none;opacity:.32;}
+.cal-d.hol{color:#dc2626;background:#fff0f0;pointer-events:none;opacity:.65;}
+.cal-d.hol .dot{background:#fca5a5;}
+.cal-d.hol::after{content:'🎌';font-size:7px;position:absolute;top:2px;right:2px;}
+.cal-d.av{background:var(--a2);color:var(--primary);}
+.cal-d.av:hover{background:var(--primary);color:#fff;border-color:var(--primary);}
+.cal-d.sel{background:var(--primary);color:#fff;border-color:var(--primary);box-shadow:0 4px 12px rgba(10,61,107,0.25);}
+.cal-d.tod:not(.sel){border-color:var(--accent);}
+.dn{font-size:13.5px;font-weight:600;line-height:1;}
+.dot{width:5px;height:5px;border-radius:50%;margin-top:2px;}
+.cal-d.av .dot{background:var(--accent);}
+.cal-d.sel .dot{background:rgba(255,255,255,.7);}
+.cal-legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:12px;font-size:11.5px;color:var(--tx3);}
+.cl-item{display:flex;align-items:center;gap:4px;}
+.cl-dot{width:11px;height:11px;border-radius:3px;}
+
+.ts-box{border:2px solid var(--bd);border-radius:13px;padding:18px;cursor:pointer;transition:all .2s;background:var(--sur2);max-width:300px;}
+.ts-box:hover:not(.full){border-color:var(--primary);background:var(--a2);}
+.ts-box.sel{border-color:var(--primary);background:#e8f0fb;}
+.ts-box.full{opacity:.55;cursor:not-allowed;}
+.ts-t{font-size:24px;font-weight:800;color:var(--primary);margin-bottom:3px;}
+.ts-tag{display:inline-block;background:var(--a2);color:var(--teal);border-radius:6px;padding:2px 9px;font-size:11px;font-weight:700;margin-bottom:8px;}
+.ts-bar-w{height:8px;background:var(--bd);border-radius:4px;overflow:hidden;}
+.ts-bar{height:100%;border-radius:4px;transition:width .4s;}
+.bar-ok{background:var(--ok);} .bar-w{background:var(--warn);} .bar-f{background:var(--err);}
+.ts-ct{font-size:12px;color:var(--tx3);margin-top:5px;}
+.ts-st{font-size:12.5px;font-weight:700;margin-top:4px;}
+.st-ok{color:var(--ok);} .st-w{color:var(--warn);} .st-f{color:var(--err);}
+
+.consent-box{background:#fffbeb;border:1.5px solid #fde68a;border-radius:12px;padding:17px;margin-bottom:18px;}
+.consent-box p{font-size:13px;line-height:1.8;color:#78350f;}
+.consent-chk{display:flex;align-items:flex-start;gap:9px;margin-top:13px;cursor:pointer;}
+.consent-chk input{width:17px;height:17px;accent-color:var(--primary);margin-top:2px;flex-shrink:0;}
+.consent-chk span{font-size:13px;color:var(--tx);font-weight:500;}
+
+.btn{padding:12px 26px;border-radius:10px;font-size:14.5px;font-weight:700;cursor:pointer;border:none;font-family:inherit;transition:all .18s;display:inline-flex;align-items:center;gap:7px;}
+.btn-p{background:var(--primary);color:#fff;}
+.btn-p:hover{background:var(--pl);transform:translateY(-1px);box-shadow:var(--sh);}
+.btn-p:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none;}
+.btn-o{background:transparent;color:var(--primary);border:2px solid var(--primary);}
+.btn-o:hover{background:var(--a2);}
+.btn-d{background:var(--err);color:#fff;}
+.btn-g{background:var(--ok);color:#fff;}
+.btn-w{background:var(--warn);color:#fff;}
+.btn-pu{background:var(--purple);color:#fff;}
+.btn-line{background:var(--line-green);color:#fff;}
+.btn-line:hover{background:var(--line-dark);}
+.btn-sm{padding:6px 13px;font-size:12.5px;}
+.btn-row{display:flex;gap:10px;justify-content:flex-end;margin-top:22px;}
+
+.sum-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px;}
+.sum-l{font-size:11px;color:var(--tx3);font-weight:700;text-transform:uppercase;letter-spacing:.04em;margin-bottom:2px;}
+.sum-v{font-size:14.5px;font-weight:600;color:var(--tx);}
+.sum-div{grid-column:1/-1;border:none;border-top:1.5px solid var(--bd);}
+
+.ov{position:fixed;inset:0;background:rgba(10,20,50,.56);z-index:900;display:none;align-items:center;justify-content:center;backdrop-filter:blur(3px);}
+.ov.on{display:flex;}
+.pop{background:var(--sur);border-radius:22px;padding:38px;max-width:480px;width:92%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.2);animation:popIn .28s ease;}
+@keyframes popIn{from{transform:scale(.86);opacity:0}to{transform:scale(1);opacity:1}}
+.pop-ic{font-size:52px;margin-bottom:14px;}
+.pop h2{font-size:21px;font-weight:700;color:var(--primary);margin-bottom:9px;}
+.pop p{font-size:14.5px;color:var(--tx2);line-height:1.7;margin-bottom:22px;}
+.pop-ref{background:var(--a2);border-radius:10px;padding:11px 18px;font-size:18px;font-weight:700;color:var(--primary);letter-spacing:.08em;margin-bottom:18px;}
+
+.pop-detail{background:var(--sur);border-radius:22px;padding:32px;max-width:640px;width:96%;text-align:left;box-shadow:0 20px 60px rgba(0,0,0,.2);animation:popIn .28s ease;max-height:90vh;overflow-y:auto;}
+.detail-section{margin-bottom:18px;}
+.detail-section-title{font-size:13px;font-weight:700;color:var(--primary);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px;padding-bottom:6px;border-bottom:2px solid var(--a2);}
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.detail-item{background:var(--sur2);border-radius:9px;padding:10px 13px;}
+.detail-item .dl{font-size:11px;color:var(--tx3);font-weight:600;margin-bottom:3px;text-transform:uppercase;}
+.detail-item .dv{font-size:13.5px;font-weight:600;color:var(--tx);}
+.detail-item.full{grid-column:1/-1;}
+
+.alert{padding:12px 15px;border-radius:10px;font-size:13.5px;margin-bottom:15px;line-height:1.6;}
+.a-info{background:#e0f2fe;color:#0c4a6e;border:1px solid #7dd3fc;}
+.a-warn{background:#fffbeb;color:#78350f;border:1px solid #fde68a;}
+.a-ok{background:#dcfce7;color:#14532d;border:1px solid #86efac;}
+.a-err{background:#fee2e2;color:#991b1b;border:1px solid #fca5a5;}
+.section-note{background:var(--a2);border-left:4px solid var(--accent);border-radius:0 9px 9px 0;padding:11px 14px;font-size:13.5px;color:var(--tx2);margin-bottom:14px;white-space:pre-line;}
+
+.apt-card{background:var(--sur);border-radius:13px;border:1.5px solid var(--bd);padding:18px;margin-bottom:12px;transition:all .2s;}
+.apt-card:hover{border-color:var(--accent);box-shadow:var(--sh);}
+.apt-hdr{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:9px;}
+.apt-ref{font-size:12px;color:var(--tx3);}
+.apt-st{font-size:12px;font-weight:700;padding:3px 11px;border-radius:20px;}
+.apt-st.pending{background:#fef3c7;color:#92400e;} .apt-st.confirmed{background:#d1fae5;color:#065f46;} .apt-st.cancelled{background:#fee2e2;color:#991b1b;} .apt-st.rescheduled{background:#ede9fe;color:#5b21b6;}
+.apt-name{font-size:16px;font-weight:700;color:var(--primary);margin-bottom:5px;}
+.apt-info{font-size:13.5px;color:var(--tx2);line-height:1.8;}
+.instr-card{background:linear-gradient(135deg,#f0fdf4,#dcfce7);border:1.5px solid #86efac;border-radius:13px;padding:18px;margin-top:14px;}
+.instr-card.surg{background:linear-gradient(135deg,#faf5ff,#ede9fe);border-color:#c4b5fd;}
+.instr-title{font-size:14px;font-weight:700;color:#14532d;margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+.instr-card.surg .instr-title{color:#5b21b6;}
+.instr-list{list-style:none;display:flex;flex-direction:column;gap:6px;}
+.instr-list li{font-size:13px;color:var(--tx2);display:flex;align-items:flex-start;gap:7px;line-height:1.5;}
+.instr-list li::before{content:'•';color:var(--ok);font-weight:700;flex-shrink:0;}
+.instr-card.surg .instr-list li::before{color:var(--purple);}
+
+.adm-login{max-width:400px;margin:0 auto;padding-top:16px;}
+.adm-hdr{display:flex;align-items:center;gap:13px;margin-bottom:22px;}
+.adm-av{width:50px;height:50px;background:var(--primary);border-radius:11px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:22px;}
+.adm-hdr h2{font-size:19px;font-weight:700;color:var(--primary);} .adm-hdr p{font-size:13px;color:var(--tx3);}
+.dash-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px;}
+.dash-stat{background:var(--sur);border-radius:var(--R);padding:18px;box-shadow:var(--sh);text-align:center;}
+.dash-num{font-size:30px;font-weight:800;color:var(--primary);line-height:1;}
+.dash-lbl{font-size:12.5px;color:var(--tx3);margin-top:5px;font-weight:500;}
+.table-w{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+thead th{background:var(--primary);color:#fff;padding:11px 13px;text-align:left;font-weight:600;}
+thead th:first-child{border-radius:8px 0 0 8px;} thead th:last-child{border-radius:0 8px 8px 0;}
+tbody tr{border-bottom:1px solid var(--bd);} tbody tr:hover{background:var(--a2);}
+tbody td{padding:10px 13px;color:var(--tx);vertical-align:middle;}
+.badge{display:inline-block;padding:3px 9px;border-radius:20px;font-size:11.5px;font-weight:600;}
+.b-pend{background:#fef3c7;color:#92400e;} .b-conf{background:#d1fae5;color:#065f46;} .b-canc{background:#fee2e2;color:#991b1b;} .b-res{background:#ede9fe;color:#5b21b6;}
+.filter-bar{display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;align-items:center;}
+.filter-bar select,.filter-bar input{padding:8px 13px;border:1.5px solid var(--bd);border-radius:8px;font-size:13px;font-family:inherit;background:var(--sur);color:var(--tx);outline:none;}
+.filter-bar select:focus,.filter-bar input:focus{border-color:var(--accent);}
+.tabs{display:flex;border-bottom:2px solid var(--bd);margin-bottom:20px;overflow-x:auto;}
+.tab{padding:11px 20px;font-size:14px;font-weight:600;cursor:pointer;color:var(--tx3);border-bottom:3px solid transparent;margin-bottom:-2px;transition:all .2s;white-space:nowrap;}
+.tab:hover{color:var(--primary);} .tab.on{color:var(--primary);border-bottom-color:var(--primary);}
+
+.tog-row{display:flex;align-items:center;gap:11px;padding:11px 0;border-bottom:1px solid var(--bd);margin-bottom:14px;}
+.tog{position:relative;width:46px;height:25px;}
+.tog input{opacity:0;width:0;height:0;}
+.tog-sl{position:absolute;inset:0;background:#ccc;border-radius:25px;cursor:pointer;transition:.3s;}
+.tog-sl::before{content:'';position:absolute;width:19px;height:19px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.3s;}
+.tog input:checked+.tog-sl{background:var(--primary);}
+.tog input:checked+.tog-sl::before{transform:translateX(21px);}
+.tog-lbl{font-size:13.5px;font-weight:600;color:var(--tx);}
+.tog-desc{font-size:12px;color:var(--tx3);margin-left:auto;}
+
+.hol-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(205px,1fr));gap:7px;max-height:280px;overflow-y:auto;padding:3px;}
+.hol-item{display:flex;align-items:center;gap:8px;background:#fff0f0;border:1.5px solid #fca5a5;border-radius:8px;padding:7px 11px;font-size:12.5px;}
+.hol-item input{accent-color:var(--err);width:14px;height:14px;flex-shrink:0;}
+.hol-info{flex:1;min-width:0;}
+.hol-date{font-size:12px;font-weight:700;color:#dc2626;}
+.hol-name{font-size:11px;color:var(--tx3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.hol-del{background:none;border:none;cursor:pointer;color:var(--err);font-size:13px;padding:0 2px;flex-shrink:0;}
+.hol-add{display:flex;gap:8px;margin-top:11px;flex-wrap:wrap;}
+.hol-add input{padding:8px 11px;border:1.5px solid var(--bd);border-radius:8px;font-size:13px;font-family:inherit;outline:none;min-width:0;}
+.hol-add input:focus{border-color:var(--accent);}
+.hol-add input[type=date]{flex:1.2;} .hol-add input[type=text]{flex:2;}
+
+.doc-tag{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,var(--primary),var(--pl));color:#fff;border-radius:20px;padding:5px 14px;font-size:13px;font-weight:600;}
+
+.qm-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;}
+.qm-item{background:var(--sur2);border:1.5px solid var(--bd);border-radius:11px;padding:14px;}
+.qm-title{font-size:13px;font-weight:700;color:var(--tx2);margin-bottom:8px;}
+.qm-controls{display:flex;align-items:center;gap:10px;}
+.qm-num{font-size:22px;font-weight:800;color:var(--primary);min-width:32px;text-align:center;}
+.qm-btn{width:32px;height:32px;border-radius:8px;border:1.5px solid var(--bd);background:var(--sur);cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;transition:all .18px;font-family:inherit;font-weight:700;}
+.qm-btn:hover{border-color:var(--primary);background:var(--a2);}
+
+.instr-editor textarea{min-height:100px;width:100%;padding:11px 13px;border:1.5px solid var(--bd);border-radius:var(--r);font-size:13.5px;font-family:inherit;color:var(--tx);background:var(--sur2);outline:none;resize:vertical;}
+.instr-editor textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(0,184,217,0.12);}
+
+.man-form{background:var(--sur2);border:1.5px solid var(--bd);border-radius:var(--R);padding:22px;margin-bottom:18px;}
+
+.slot-tog-btn{display:inline-flex;align-items:center;gap:6px;padding:6px 13px;border-radius:20px;border:1.5px solid var(--ok);background:#f0fdf4;color:#15803d;font-size:12.5px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s;}
+.slot-tog-btn.closed{border-color:var(--err);background:#fee2e2;color:#991b1b;}
+.slot-tog-btn:hover{opacity:.85;}
+.qm-item.closed-day{opacity:.75;background:#fff5f5;}
+
+/* ============ LINE MESSAGING API SECTION ============ */
+.line-hero{background:linear-gradient(135deg,#00B900 0%,#00A000 60%,#007a00 100%);border-radius:22px;padding:32px 40px;color:#fff;margin-bottom:24px;position:relative;overflow:hidden;}
+.line-hero::before{content:'';position:absolute;right:-40px;top:-40px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,0.07);}
+.line-hero-t{font-size:22px;font-weight:800;margin-bottom:8px;}
+.line-hero-s{font-size:14px;opacity:.85;line-height:1.7;}
+.line-logo{font-size:42px;margin-bottom:12px;}
+
+.guide-steps{display:flex;flex-direction:column;gap:0;}
+.guide-step{display:flex;gap:0;position:relative;}
+.guide-step:not(:last-child)::after{content:'';position:absolute;left:20px;top:46px;bottom:-4px;width:2px;background:linear-gradient(to bottom,var(--accent),rgba(0,184,217,0.1));}
+.step-num{width:42px;height:42px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;flex-shrink:0;box-shadow:0 4px 12px rgba(10,61,107,0.2);}
+.step-body{padding:0 0 28px 18px;flex:1;}
+.step-title{font-size:16px;font-weight:700;color:var(--primary);margin-bottom:6px;margin-top:9px;}
+.step-desc{font-size:13.5px;color:var(--tx2);line-height:1.75;}
+.step-img{background:var(--sur2);border:1.5px solid var(--bd);border-radius:12px;padding:16px;margin-top:12px;}
+.step-img-title{font-size:12px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;}
+
+.code-block{background:#1e2433;border-radius:12px;padding:18px;margin-top:12px;overflow-x:auto;}
+.code-block pre{font-size:12.5px;color:#a8c7fa;line-height:1.8;font-family:'Courier New',monospace;white-space:pre;}
+.code-comment{color:#6a9955;}
+.code-key{color:#ce9178;}
+.code-val{color:#b5cea8;}
+.code-str{color:#ce9178;}
+.code-fn{color:#dcdcaa;}
+.code-kw{color:#c586c0;}
+.code-copy{display:flex;justify-content:flex-end;margin-bottom:8px;}
+.code-copy button{background:rgba(255,255,255,0.12);color:#cdd6f4;border:1px solid rgba(255,255,255,0.2);border-radius:6px;padding:4px 12px;font-size:12px;cursor:pointer;font-family:inherit;}
+.code-copy button:hover{background:rgba(255,255,255,0.2);}
+
+.channel-type{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:18px;}
+.ch-card{background:var(--sur2);border:1.5px solid var(--bd);border-radius:12px;padding:16px;text-align:center;transition:all .2s;cursor:pointer;}
+.ch-card:hover{border-color:var(--accent);background:var(--a2);}
+.ch-card.active{border-color:var(--line-green);background:#f0fff4;}
+.ch-card-icon{font-size:28px;margin-bottom:8px;}
+.ch-card-title{font-size:13.5px;font-weight:700;color:var(--tx);}
+.ch-card-desc{font-size:12px;color:var(--tx3);margin-top:4px;line-height:1.5;}
+.ch-card-badge{display:inline-block;margin-top:8px;background:#d1fae5;color:#065f46;border-radius:20px;padding:2px 10px;font-size:11px;font-weight:700;}
+.ch-card-badge.free{background:#dcfce7;color:#15803d;}
+.ch-card-badge.paid{background:#fef3c7;color:#92400e;}
+.ch-card-badge.adv{background:#ede9fe;color:#5b21b6;}
+
+.api-test-box{background:var(--sur2);border:1.5px solid var(--bd);border-radius:14px;padding:20px;margin-top:18px;}
+.api-test-title{font-size:15px;font-weight:700;color:var(--primary);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.api-input-row{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;}
+.api-input-row input{flex:1;min-width:200px;padding:10px 14px;border:1.5px solid var(--bd);border-radius:8px;font-family:inherit;font-size:13.5px;background:#fff;outline:none;color:var(--tx);}
+.api-input-row input:focus{border-color:var(--accent);}
+.api-msg-area{width:100%;padding:10px 14px;border:1.5px solid var(--bd);border-radius:8px;font-family:inherit;font-size:13.5px;background:#fff;outline:none;resize:vertical;min-height:80px;color:var(--tx);margin-bottom:12px;}
+.api-msg-area:focus{border-color:var(--accent);}
+.api-result{background:#fff;border:1px solid var(--bd);border-radius:8px;padding:12px 14px;font-size:13px;font-family:'Courier New',monospace;min-height:44px;color:var(--tx2);white-space:pre-wrap;word-break:break-all;}
+.api-result.ok{border-color:#86efac;background:#f0fdf4;color:#14532d;}
+.api-result.err{border-color:#fca5a5;background:#fee2e2;color:#991b1b;}
+
+.line-status-bar{display:flex;align-items:center;gap:12px;background:linear-gradient(135deg,var(--line-green),var(--line-dark));color:#fff;border-radius:13px;padding:14px 20px;margin-bottom:20px;}
+.line-status-bar.inactive{background:linear-gradient(135deg,#64748b,#475569);}
+.ls-icon{font-size:24px;}
+.ls-info{flex:1;}
+.ls-title{font-size:15px;font-weight:700;}
+.ls-sub{font-size:12px;opacity:.85;}
+.ls-badge{background:rgba(255,255,255,0.22);border-radius:20px;padding:4px 14px;font-size:12.5px;font-weight:700;white-space:nowrap;}
+
+.ln-log-item{display:flex;align-items:flex-start;gap:9px;background:#fff;border:1px solid var(--bd);border-radius:8px;padding:8px 11px;font-size:12px;}
+.ln-log-ic{font-size:15px;flex-shrink:0;margin-top:1px;}
+.ln-log-info{flex:1;min-width:0;}
+.ln-log-msg{color:var(--tx);font-weight:500;line-height:1.4;}
+.ln-log-time{color:var(--tx3);font-size:11px;margin-top:2px;}
+.ln-log-ok{border-color:#86efac;}
+.ln-log-err{border-color:#fca5a5;}
+.ln-log-warn{border-color:#fde68a;}
+
+/* Template cards */
+.tpl-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px;}
+.tpl-card{background:var(--sur2);border:1.5px solid var(--bd);border-radius:12px;overflow:hidden;}
+.tpl-head{background:var(--primary);color:#fff;padding:10px 14px;font-size:13px;font-weight:700;}
+.tpl-head.line{background:var(--line-green);}
+.tpl-body{padding:14px;font-size:13px;color:var(--tx2);line-height:1.8;white-space:pre-wrap;}
+.tpl-vars{display:flex;flex-wrap:wrap;gap:5px;padding:0 14px 12px;}
+.tpl-var{display:inline-flex;background:#e8f0fb;color:var(--primary);border-radius:20px;padding:2px 9px;font-size:11.5px;font-weight:600;}
+
+.msg-preview{background:#f5f6f8;border-radius:12px;padding:16px;margin-top:12px;}
+.msg-preview-title{font-size:12px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px;}
+.msg-bubble{background:#fff;border-radius:0 14px 14px 14px;padding:12px 14px;font-size:13.5px;color:var(--tx);line-height:1.75;box-shadow:0 2px 8px rgba(0,0,0,0.08);display:inline-block;max-width:85%;white-space:pre-wrap;}
+.msg-time{font-size:11px;color:var(--tx3);margin-top:5px;text-align:right;}
+
+/* FAQ */
+.faq-item{border:1.5px solid var(--bd);border-radius:12px;overflow:hidden;margin-bottom:8px;}
+.faq-q{padding:14px 18px;font-size:14px;font-weight:600;color:var(--tx);cursor:pointer;display:flex;justify-content:space-between;align-items:center;background:var(--sur2);}
+.faq-q:hover{background:var(--a2);}
+.faq-a{padding:14px 18px;font-size:13.5px;color:var(--tx2);line-height:1.75;border-top:1.5px solid var(--bd);display:none;background:var(--sur);}
+.faq-a.on{display:block;}
+.faq-icon{font-size:18px;transition:transform .2s;}
+.faq-item.open .faq-icon{transform:rotate(45deg);}
+
+/* Comparison table */
+.cmp-table{width:100%;border-collapse:collapse;margin-top:16px;}
+.cmp-table th{background:var(--primary);color:#fff;padding:10px 14px;text-align:left;font-size:13px;font-weight:600;}
+.cmp-table th:first-child{border-radius:8px 0 0 8px;} .cmp-table th:last-child{border-radius:0 8px 8px 0;}
+.cmp-table td{padding:10px 14px;border-bottom:1px solid var(--bd);font-size:13px;color:var(--tx);}
+.cmp-table tr:hover td{background:var(--a2);}
+.cmp-ok{color:var(--ok);font-weight:700;}
+.cmp-no{color:var(--tx3);}
+.cmp-warn{color:var(--warn);font-weight:700;}
+
+.ln-manual-result{display:flex;flex-direction:column;gap:8px;margin-top:12px;}
+.ln-apt-row{display:flex;align-items:center;gap:10px;background:#fff;border:1.5px solid var(--bd);border-radius:10px;padding:10px 13px;flex-wrap:wrap;}
+.ln-apt-row .la-nm{font-size:14px;font-weight:700;color:var(--primary);}
+.ln-apt-row .la-dt{font-size:12px;color:var(--tx3);}
+
+.hidden{display:none!important;} .mt14{margin-top:14px;} .mt20{margin-top:20px;}
+.no-data{text-align:center;color:var(--tx3);padding:28px;font-size:14.5px;}
+.sep{border:none;border-top:1.5px solid var(--bd);margin:18px 0;}
+.pill{display:inline-flex;align-items:center;gap:5px;background:var(--a2);color:var(--primary);border-radius:20px;padding:3px 11px;font-size:12.5px;font-weight:600;}
+
+@media(max-width:680px){
+  .fr{grid-template-columns:1fr;}
+  .dash-grid{grid-template-columns:1fr 1fr;}
+  .sum-grid,.detail-grid{grid-template-columns:1fr;}
+  .hero{flex-direction:column;padding:26px 22px;}
+  .stepper{padding:13px 14px;} .stp-l{display:none;}
+  .qm-grid{grid-template-columns:1fr;}
+  .vision-row{grid-template-columns:1fr;}
+  .channel-type{grid-template-columns:1fr;}
+  .tpl-grid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<header class="hdr">
+  <div class="hdr-in">
+    <div class="logo">
+      <div class="logo-ic">👁️</div>
+      <div class="logo-tx">
+        <h1>ศูนย์ตรวจและรักษาสายตา</h1>
+        <p>ระบบนัดหมายตรวจตาเพื่อทำเลสิก</p>
+      </div>
+    </div>
+    <div class="nav">
+      <button class="nb on" onclick="showPage('book',this)">📅 นัดหมาย</button>
+      <button class="nb" onclick="showPage('check',this)">🔍 ตรวจสอบนัด</button>
+      <button class="nb" onclick="showPage('admin',this)">⚙️ แอดมิน</button>
+    </div>
+  </div>
+</header>
+
+<div class="main">
+
+<!-- PAGE: BOOK -->
+<div id="pg-book" class="page on">
+  <div class="hero">
+    <div>
+      <div class="hero-t">🌟 นัดหมายตรวจตาเพื่อทำเลสิก</div>
+      <div class="hero-s">กรอกข้อมูล เลือกแพทย์ และเลือกวันนัดหมาย<br>เจ้าหน้าที่จะติดต่อกลับเพื่อยืนยันนัดหมาย</div>
+    </div>
+    <button class="hero-btn" onclick="document.getElementById('f-anchor').scrollIntoView({behavior:'smooth'})">เริ่มนัดหมาย →</button>
+  </div>
+
+  <div class="stepper">
+    <div class="stp act" id="s1"><div class="stp-n">1</div><div class="stp-l">ข้อมูลส่วนตัว</div></div>
+    <div class="stp-line" id="ln1"></div>
+    <div class="stp" id="s2"><div class="stp-n">2</div><div class="stp-l">แพทย์ & รูปแบบ</div></div>
+    <div class="stp-line" id="ln2"></div>
+    <div class="stp" id="s3"><div class="stp-n">3</div><div class="stp-l">เลือกวันนัด</div></div>
+    <div class="stp-line" id="ln3"></div>
+    <div class="stp" id="s4"><div class="stp-n">4</div><div class="stp-l">ยืนยัน</div></div>
+  </div>
+
+  <!-- STEP 1 -->
+  <div id="fs1">
+    <div class="card" id="f-anchor">
+      <div class="card-t">👤 ข้อมูลส่วนตัว</div>
+      <div class="fr">
+        <div class="fg" id="fg-nm"><label>ชื่อ-นามสกุล *</label><input id="f-nm" placeholder="กรอกชื่อ-นามสกุล"><span class="em">กรุณากรอกชื่อ-นามสกุล</span></div>
+        <div class="fg" id="fg-ag"><label>อายุ (ปี) *</label><input id="f-ag" type="number" min="20" max="55" placeholder="อายุ"><span class="em">กรุณากรอกอายุ 20-55 ปี</span></div>
+      </div>
+      <div class="fr">
+        <div class="fg" id="fg-ph"><label>เบอร์โทรศัพท์ *</label><input id="f-ph" type="tel" maxlength="10" placeholder="0xx-xxx-xxxx"><span class="em">กรุณากรอกเบอร์ 10 หลัก เริ่มด้วย 0</span></div>
+        <div class="fg"><label>อีเมล (ถ้ามี)</label><input id="f-em" type="email" placeholder="email@example.com"></div>
+      </div>
+
+      <div class="card-t" style="margin-top:20px;">👓 ค่าสายตา</div>
+      <div class="fr" id="fg-vision-wrap">
+        <div class="fg" id="fg-rv">
+          <label style="margin-bottom:6px;">ตาขวา (OD) *</label>
+          <div class="vision-block">
+            <div class="vision-block-title">ตาขวา (OD)</div>
+            <div class="vision-row">
+              <div class="vision-field"><label>สายตาสั้น/ยาว (SPH)</label><input id="rv-sph" type="number" step="0.25" placeholder="เช่น -3.50" oninput="onVisionChange('rv')"></div>
+              <div class="vision-field"><label>สายตาเอียง (CYL)</label><input id="rv-cyl" type="number" step="0.25" placeholder="เช่น -1.25" oninput="onVisionChange('rv')"></div>
+            </div>
+            <label class="vision-unknown" id="rv-unk-lbl" onclick="toggleUnknown('rv')"><input type="checkbox" id="rv-unk"> ไม่ทราบค่าสายตา</label>
+            <div class="vision-hint" id="rv-hint"></div>
+          </div>
+          <span class="em">กรุณากรอกค่าสายตาขวา หรือเลือก "ไม่ทราบ"</span>
+        </div>
+        <div class="fg" id="fg-lv">
+          <label style="margin-bottom:6px;">ตาซ้าย (OS) *</label>
+          <div class="vision-block">
+            <div class="vision-block-title">ตาซ้าย (OS)</div>
+            <div class="vision-row">
+              <div class="vision-field"><label>สายตาสั้น/ยาว (SPH)</label><input id="lv-sph" type="number" step="0.25" placeholder="เช่น -3.50" oninput="onVisionChange('lv')"></div>
+              <div class="vision-field"><label>สายตาเอียง (CYL)</label><input id="lv-cyl" type="number" step="0.25" placeholder="เช่น -1.25" oninput="onVisionChange('lv')"></div>
+            </div>
+            <label class="vision-unknown" id="lv-unk-lbl" onclick="toggleUnknown('lv')"><input type="checkbox" id="lv-unk"> ไม่ทราบค่าสายตา</label>
+            <div class="vision-hint" id="lv-hint"></div>
+          </div>
+          <span class="em">กรุณากรอกค่าสายตาซ้าย หรือเลือก "ไม่ทราบ"</span>
+        </div>
+      </div>
+      <div class="alert a-info" style="margin-top:6px;margin-bottom:0;">💡 SPH ติดลบ = สายตาสั้น | SPH บวก = สายตายาว | CYL = สายตาเอียง</div>
+
+      <div class="card-t" style="margin-top:22px;">🏥 โรคประจำตัว</div>
+      <div class="chips" id="dis-grp">
+        <label class="chip" onclick="togChip(this,'dis-grp')"><input type="checkbox" value="เบาหวาน">🩸 เบาหวาน</label>
+        <label class="chip" onclick="togChip(this,'dis-grp')"><input type="checkbox" value="ความดันโลหิตสูง">💓 ความดัน</label>
+        <label class="chip" onclick="togChip(this,'dis-grp')"><input type="checkbox" value="ไขมันในเลือดสูง">🧪 ไขมันในเลือด</label>
+        <label class="chip" onclick="togChip(this,'dis-grp')"><input type="checkbox" value="ไทรอยด์">⚕️ ไทรอยด์</label>
+        <label class="chip" onclick="togChip(this,'dis-grp')"><input type="checkbox" value="อุบัติเหตุที่ตา">👁️ อุบัติเหตุที่ตา</label>
+        <label class="chip" onclick="togChip(this,'dis-grp')"><input type="checkbox" value="ต้อหิน">👁 ต้อหิน</label>
+        <label class="chip" id="dis-other-chip" onclick="togChip(this,'dis-grp')"><input type="checkbox" value="__other__">✏️ อื่นๆ</label>
+        <label class="chip" id="chip-none" onclick="togChipNone(this,'dis-grp')"><input type="checkbox" value="ไม่มีโรคประจำตัว">✅ ไม่มีโรคประจำตัว</label>
+      </div>
+      <div class="other-input-wrap" id="dis-other-wrap">
+        <input type="text" id="dis-other-text" placeholder="ระบุโรคประจำตัวอื่นๆ">
+      </div>
+
+      <div class="card-t" style="margin-top:20px;">💊 ยาที่ใช้ประจำ</div>
+      <div class="chips" id="med-grp">
+        <label class="chip" onclick="togChip(this,'med-grp')"><input type="checkbox" value="ยาลดสิว">💊 ยาลดสิว</label>
+        <label class="chip" onclick="togChip(this,'med-grp')"><input type="checkbox" value="ยาฮอร์โมน">🌸 ยาฮอร์โมน</label>
+        <label class="chip" onclick="togChip(this,'med-grp')"><input type="checkbox" value="ยาโรคประจำตัว">🏥 ยาโรคประจำตัว</label>
+        <label class="chip" id="med-custom-chip" onclick="togMedCustom(this)"><input type="checkbox" value="__custom__">✏️ ระบุชื่อยา</label>
+        <label class="chip" id="chip-nomed" onclick="togChipNone(this,'med-grp')"><input type="checkbox" value="ไม่มี">✅ ไม่มียาประจำ</label>
+      </div>
+      <div class="med-custom-wrap" id="med-custom-wrap">
+        <div class="med-custom-row">
+          <input type="text" id="med-custom-input" placeholder="พิมพ์ชื่อยา แล้วกด Enter" onkeydown="if(event.key==='Enter'){event.preventDefault();addMedTag();}">
+          <button class="btn btn-p btn-sm" type="button" onclick="addMedTag()">+ เพิ่ม</button>
+        </div>
+        <div class="med-tag-list" id="med-tag-list"></div>
+      </div>
+
+      <div class="btn-row"><button class="btn btn-p" onclick="nxt(1)">ถัดไป →</button></div>
+    </div>
+  </div>
+
+  <!-- STEP 2 -->
+  <div id="fs2" class="hidden">
+    <div class="card">
+      <div class="card-t">👨‍⚕️ เลือกแพทย์ผู้ตรวจ</div>
+      <div class="chips" id="doc-grp">
+        <label class="rchip" onclick="selDoc(this,'ไม่ระบุแพทย์')"><input type="radio">🏥 ไม่ระบุแพทย์</label>
+        <label class="rchip" onclick="selDoc(this,'พ.เมธินี')"><input type="radio">👩‍⚕️ พ.เมธินี</label>
+        <label class="rchip" onclick="selDoc(this,'พ.เอกอนันต์')"><input type="radio">👨‍⚕️ พ.เอกอนันต์</label>
+        <label class="rchip" onclick="selDoc(this,'พ.นพมาศ')"><input type="radio">👩‍⚕️ พ.นพมาศ</label>
+      </div>
+      <div id="doc-note" class="section-note mt14 hidden"></div>
+    </div>
+    <div class="card">
+      <div class="card-t">📋 รูปแบบการนัดหมาย</div>
+      <div class="chips" id="type-grp">
+        <label class="rchip" onclick="selType(this,'ตรวจอย่างเดียว')"><input type="radio">🔬 ตรวจอย่างเดียว</label>
+        <label class="rchip" id="surg-opt" onclick="selType(this,'ตรวจเช้าผ่าตัดเย็น')"><input type="radio">🔪 ตรวจเช้าผ่าตัดเย็น</label>
+      </div>
+      <div id="type-note" class="section-note mt14 hidden"></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-o" onclick="prv(2)">← ย้อนกลับ</button>
+      <button class="btn btn-p" onclick="nxt(2)">ถัดไป →</button>
+    </div>
+  </div>
+
+  <!-- STEP 3 -->
+  <div id="fs3" class="hidden">
+    <div class="card">
+      <div class="card-t">📅 เลือกวันนัดหมาย</div>
+      <div id="cal-doctag" style="margin-bottom:14px;"></div>
+      <div class="cal-hdr">
+        <div class="cal-title" id="cal-mo"></div>
+        <div class="cal-nav">
+          <button onclick="chMo(-1)">‹</button>
+          <button onclick="chMo(1)">›</button>
+        </div>
+      </div>
+      <div class="cal-grid" id="cal-grid"></div>
+      <div class="cal-legend">
+        <div class="cl-item"><div class="cl-dot" style="background:var(--a2);border:1.5px solid var(--accent);"></div>นัดได้</div>
+        <div class="cl-item"><div class="cl-dot" style="background:var(--primary);"></div>เลือกแล้ว</div>
+        <div class="cl-item"><div class="cl-dot" style="background:#fff0f0;border:1.5px solid #fca5a5;"></div>วันหยุดนักขัตฤกษ์</div>
+        <div class="cl-item"><div class="cl-dot" style="background:var(--bd);"></div>ปิดบริการ</div>
+      </div>
+      <div id="slot-sec" class="mt14 hidden">
+        <div class="card-t" style="margin-bottom:10px;">⏰ ช่วงเวลา</div>
+        <div id="slot-box"></div>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-o" onclick="prv(3)">← ย้อนกลับ</button>
+      <button class="btn btn-p" onclick="nxt(3)">ถัดไป →</button>
+    </div>
+  </div>
+
+  <!-- STEP 4 -->
+  <div id="fs4" class="hidden">
+    <div class="card">
+      <div class="card-t">✅ ตรวจสอบข้อมูลก่อนบันทึก</div>
+      <div class="sum-grid" id="sum-ct"></div>
+    </div>
+    <div class="consent-box">
+      <p><strong>ข้อตกลงการเก็บรักษาข้อมูลส่วนบุคคล (PDPA)</strong><br>ข้อมูลที่ท่านกรอกจะถูกเก็บรักษาเพื่อวัตถุประสงค์ในการนัดหมายและประเมินผลเพื่อการทำเลสิกเท่านั้น</p>
+      <label class="consent-chk">
+        <input type="checkbox" id="cb-consent" onchange="document.getElementById('btn-save').disabled=!this.checked">
+        <span>ข้าพเจ้าได้อ่านและยินยอมให้เก็บและใช้ข้อมูลส่วนบุคคล *</span>
+      </label>
+    </div>
+    <div class="alert a-info">📞 เจ้าหน้าที่จะติดต่อกลับเพื่อยืนยันนัดหมายภายใน 1–2 วันทำการ</div>
+    <div class="btn-row">
+      <button class="btn btn-o" onclick="prv(4)">← ย้อนกลับ</button>
+      <button class="btn btn-p" id="btn-save" onclick="saveApt()" disabled>💾 บันทึกนัดหมาย</button>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE: CHECK -->
+<div id="pg-check" class="page">
+  <div class="card">
+    <div class="card-t">🔍 ตรวจสอบนัดหมาย</div>
+    <div class="section-note">กรอกเบอร์โทรศัพท์ที่ใช้ในการนัดหมาย เพื่อตรวจสอบสถานะและรับคำแนะนำการเตรียมตัว</div>
+    <div class="fr" style="max-width:420px;">
+      <div class="fg"><label>เบอร์โทรศัพท์</label><input id="ck-ph" type="tel" maxlength="10" placeholder="0xx-xxx-xxxx" onkeydown="if(event.key==='Enter')doCheck()"></div>
+    </div>
+    <button class="btn btn-p" onclick="doCheck()">🔍 ตรวจสอบ</button>
+    <div id="ck-result" class="hidden" style="margin-top:18px;"></div>
+  </div>
+</div>
+
+<!-- PAGE: ADMIN -->
+<div id="pg-admin" class="page">
+  <div id="adm-login" class="adm-login">
+    <div class="card">
+      <div class="adm-hdr">
+        <div class="adm-av">🔐</div>
+        <div><h2>เข้าสู่ระบบแอดมิน</h2><p>สำหรับเจ้าหน้าที่เท่านั้น</p></div>
+      </div>
+      <div class="fg" style="margin-bottom:14px;"><label>ชื่อผู้ใช้งาน</label><input id="adm-u" placeholder="กรอกชื่อผู้ใช้"></div>
+      <div class="fg" style="margin-bottom:18px;"><label>รหัสผ่าน</label><input type="password" id="adm-pw" placeholder="กรอกรหัสผ่าน" onkeydown="if(event.key==='Enter')admLogin()"></div>
+      <div id="adm-err" class="alert a-err hidden">ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง</div>
+      <button class="btn btn-p" style="width:100%;" onclick="admLogin()">🔐 เข้าสู่ระบบ</button>
+      <div style="margin-top:10px;font-size:11.5px;color:var(--tx3);text-align:center;">ทดสอบ: KLANG / LASIK</div>
+    </div>
+  </div>
+
+  <div id="adm-dash" class="hidden">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;flex-wrap:wrap;gap:10px;">
+      <div>
+        <h2 style="font-size:21px;font-weight:800;color:var(--primary);">📊 แดชบอร์ดจัดการนัดหมาย</h2>
+        <p style="font-size:12.5px;color:var(--tx3);">ศูนย์ตรวจและรักษาสายตา</p>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-o btn-sm" onclick="admLogout()">ออกจากระบบ</button>
+      </div>
+    </div>
+
+    <div class="dash-grid" id="adm-stats"></div>
+
+    <div class="card">
+      <div class="tabs">
+        <div class="tab on" onclick="admTab('apts',this)">📋 จัดการนัดหมาย</div>
+        <div class="tab" onclick="admTab('manual',this)">➕ ลงนัดด้วยตนเอง</div>
+        <div class="tab" onclick="admTab('queue',this)">🔢 จัดการคิว</div>
+        <div class="tab" onclick="admTab('instr',this)">📝 คำแนะนำผู้ป่วย</div>
+        <div class="tab" onclick="admTab('hols',this)">🎌 วันหยุด</div>
+        <div class="tab" onclick="admTab('line-adm',this)">💬 Line Messaging API</div>
+      </div>
+
+      <div id="tab-apts">
+        <div class="filter-bar">
+          <input id="adm-q" placeholder="🔍 ค้นหาชื่อ / เบอร์โทร" oninput="renderTbl()">
+          <select id="adm-fd" onchange="renderTbl()">
+            <option value="">แพทย์ทุกท่าน</option>
+            <option>ไม่ระบุแพทย์</option><option>พ.เมธินี</option>
+            <option>พ.เอกอนันต์</option><option>พ.นพมาศ</option>
+          </select>
+          <select id="adm-fs" onchange="renderTbl()">
+            <option value="">สถานะทั้งหมด</option>
+            <option value="pending">รอยืนยัน</option><option value="confirmed">ยืนยันแล้ว</option>
+            <option value="cancelled">ยกเลิก</option><option value="rescheduled">เลื่อนนัด</option>
+          </select>
+        </div>
+        <div class="table-w">
+          <table>
+            <thead><tr>
+              <th>รหัสนัด</th><th>ชื่อ-นามสกุล</th><th>เบอร์โทร</th>
+              <th>แพทย์</th><th>วันนัด</th><th>รูปแบบ</th><th>สถานะ</th><th>จัดการ</th>
+            </tr></thead>
+            <tbody id="adm-tbody"></tbody>
+          </table>
+        </div>
+        <div id="adm-nodata" class="no-data hidden">ไม่พบข้อมูลนัดหมาย</div>
+      </div>
+
+      <div id="tab-manual" class="hidden">
+        <div class="man-form">
+          <div class="card-t">➕ ลงนัดหมายด้วยตนเอง</div>
+          <div class="fr">
+            <div class="fg"><label>ชื่อ-นามสกุล *</label><input id="mn-nm" placeholder="ชื่อ-นามสกุลผู้ป่วย"></div>
+            <div class="fg"><label>อายุ *</label><input id="mn-ag" type="number" min="20" max="55" placeholder="อายุ"></div>
+          </div>
+          <div class="fr">
+            <div class="fg"><label>เบอร์โทรศัพท์ *</label><input id="mn-ph" type="tel" maxlength="10" placeholder="0xx-xxx-xxxx"></div>
+            <div class="fg"><label>อีเมล</label><input id="mn-em" type="email" placeholder="email (ถ้ามี)"></div>
+          </div>
+          <div class="fr">
+            <div class="fg"><label>แพทย์ *</label>
+              <select id="mn-doc">
+                <option value="">-- เลือกแพทย์ --</option>
+                <option>ไม่ระบุแพทย์</option><option>พ.เมธินี</option>
+                <option>พ.เอกอนันต์</option><option>พ.นพมาศ</option>
+              </select>
+            </div>
+            <div class="fg"><label>รูปแบบ *</label>
+              <select id="mn-type">
+                <option value="">-- เลือกรูปแบบ --</option>
+                <option>ตรวจอย่างเดียว</option><option>ตรวจเช้าผ่าตัดเย็น</option>
+              </select>
+            </div>
+          </div>
+          <div class="fr">
+            <div class="fg"><label>วันนัดหมาย *</label><input id="mn-dt" type="date"></div>
+            <div class="fg"><label>เวลา</label>
+              <select id="mn-tm">
+                <option value="07:30">07:30 น.</option>
+                <option value="14:00">14:00 น.</option>
+              </select>
+            </div>
+          </div>
+          <div id="mn-err" class="alert a-err hidden"></div>
+          <button class="btn btn-p" onclick="manualApt()">💾 บันทึกนัดหมาย</button>
+        </div>
+      </div>
+
+      <div id="tab-queue" class="hidden">
+        <div class="card-t" style="margin-bottom:6px;">🔢 จัดการคิวและช่วงเวลา</div>
+        <div class="fr" style="max-width:300px;margin-bottom:18px;">
+          <div class="fg"><label>เลือกวันที่</label><input type="date" id="qm-date" onchange="renderQM()"></div>
+        </div>
+        <div class="qm-grid" id="qm-grid">
+          <div class="qm-item" id="qm-card-0730">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+              <div class="qm-title" style="margin:0;">🕐 07:30 น.</div>
+              <button class="slot-tog-btn" id="stog-0730" onclick="togSlot('0730')"><span>✅</span><span>เปิดรับ</span></button>
+            </div>
+            <div id="qm-body-0730">
+              <div class="qm-controls">
+                <span style="font-size:12.5px;color:var(--tx2);font-weight:600;">คิวสูงสุด:</span>
+                <button class="qm-btn" onclick="adjQ('0730',-1)">−</button>
+                <div class="qm-num" id="qm-0730">5</div>
+                <button class="qm-btn" onclick="adjQ('0730',1)">+</button>
+                <span style="font-size:12px;color:var(--tx3);margin-left:6px;" id="qm-0730-used"></span>
+              </div>
+            </div>
+            <div id="qm-closed-0730" class="hidden" style="background:#fee2e2;border-radius:8px;padding:10px;text-align:center;font-size:13px;color:#991b1b;font-weight:600;">⛔ ปิดรับนัดช่วงนี้</div>
+          </div>
+          <div class="qm-item" id="qm-card-1400">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+              <div class="qm-title" style="margin:0;">🕑 14:00 น.</div>
+              <button class="slot-tog-btn" id="stog-1400" onclick="togSlot('1400')"><span>✅</span><span>เปิดรับ</span></button>
+            </div>
+            <div id="qm-body-1400">
+              <div class="qm-controls">
+                <span style="font-size:12.5px;color:var(--tx2);font-weight:600;">คิวสูงสุด:</span>
+                <button class="qm-btn" onclick="adjQ('1400',-1)">−</button>
+                <div class="qm-num" id="qm-1400">5</div>
+                <button class="qm-btn" onclick="adjQ('1400',1)">+</button>
+                <span style="font-size:12px;color:var(--tx3);margin-left:6px;" id="qm-1400-used"></span>
+              </div>
+            </div>
+            <div id="qm-closed-1400" class="hidden" style="background:#fee2e2;border-radius:8px;padding:10px;text-align:center;font-size:13px;color:#991b1b;font-weight:600;">⛔ ปิดรับนัดช่วงนี้</div>
+          </div>
+        </div>
+        <button class="btn btn-p btn-sm" onclick="saveQM()">💾 บันทึก</button>
+        <div id="qm-ok" class="alert a-ok hidden" style="margin-top:12px;"></div>
+      </div>
+
+      <div id="tab-instr" class="hidden">
+        <div class="card-t" style="margin-bottom:14px;">📝 คำแนะนำการเตรียมตัว</div>
+        <div class="fr">
+          <div class="instr-editor">
+            <div class="fg" style="margin-bottom:14px;">
+              <label style="font-size:14px;color:var(--primary);font-weight:700;margin-bottom:10px;display:block;">🔬 ตรวจอย่างเดียว</label>
+              <textarea id="instr-exam" rows="8"></textarea>
+            </div>
+          </div>
+          <div class="instr-editor">
+            <div class="fg">
+              <label style="font-size:14px;color:var(--purple);font-weight:700;margin-bottom:10px;display:block;">🔪 ตรวจเช้าผ่าตัดเย็น</label>
+              <textarea id="instr-surg" rows="8"></textarea>
+            </div>
+          </div>
+        </div>
+        <button class="btn btn-p" onclick="saveInstr()">💾 บันทึกคำแนะนำ</button>
+        <div id="instr-ok" class="alert a-ok hidden" style="margin-top:12px;">✅ บันทึกเรียบร้อย</div>
+      </div>
+
+      <div id="tab-hols" class="hidden">
+        <div class="card-t" style="margin-bottom:4px;">🎌 จัดการวันหยุดนักขัตฤกษ์</div>
+        <div class="tog-row">
+          <label class="tog"><input type="checkbox" id="hol-tog" onchange="onHolTog()"><div class="tog-sl"></div></label>
+          <span class="tog-lbl" id="hol-tog-lbl">ปิดบริการวันหยุดนักขัตฤกษ์</span>
+        </div>
+        <div style="margin-bottom:9px;"><span style="font-size:13px;font-weight:600;color:var(--tx2);">รายการวันหยุด (<span id="hol-cnt">0</span> วัน)</span></div>
+        <div class="hol-grid" id="hol-grid"></div>
+        <div class="hol-add">
+          <input type="date" id="hol-nd">
+          <input type="text" id="hol-nn" placeholder="ชื่อวันหยุด">
+          <button class="btn btn-p btn-sm" onclick="addHol()">+ เพิ่ม</button>
+        </div>
+      </div>
+
+      <!-- TAB: LINE MESSAGING API FULL GUIDE -->
+      <div id="tab-line-adm" class="hidden">
+
+        <div class="line-hero" style="margin-bottom:20px;">
+          <div class="line-logo">💬</div>
+          <div class="line-hero-t">Line Messaging API — คู่มือสำหรับผู้เริ่มต้น</div>
+          <div class="line-hero-s">ตั้งค่า ทดสอบส่งข้อความ และดูโค้ดตัวอย่างได้ในหน้านี้</div>
+        </div>
+
+        <div style="border-bottom:2px solid var(--bd);margin-bottom:20px;display:flex;overflow-x:auto;" id="ltabs">
+          <div class="tab on" onclick="lineTab('overview',this)" style="white-space:nowrap;">📖 ภาพรวม</div>
+          <div class="tab" onclick="lineTab('setup',this)" style="white-space:nowrap;">🔧 ตั้งค่า</div>
+          <div class="tab" onclick="lineTab('templates',this)" style="white-space:nowrap;">📝 ข้อความ</div>
+          <div class="tab" onclick="lineTab('test',this)" style="white-space:nowrap;">🧪 ทดสอบ</div>
+          <div class="tab" onclick="lineTab('faq',this)" style="white-space:nowrap;">❓ คำถามพบบ่อย</div>
+        </div>
+
+        <!-- OVERVIEW -->
+        <div id="ltab-overview">
+          <div class="card-t">🤔 Line Messaging API คืออะไร?</div>
+          <div style="font-size:14px;color:var(--tx2);line-height:1.9;margin-bottom:18px;">
+            Line Messaging API เป็นบริการของ Line ที่ให้คุณส่งข้อความผ่าน <strong>Line Official Account</strong> ไปยังผู้ป่วยโดยอัตโนมัติ เหมาะสำหรับ:
+            <ul style="margin-top:10px;margin-left:20px;display:flex;flex-direction:column;gap:6px;">
+              <li>📅 แจ้งเตือนนัดหมายล่วงหน้า</li>
+              <li>✅ ยืนยันการนัดหมาย</li>
+              <li>📋 ส่งคำแนะนำการเตรียมตัว</li>
+              <li>🔔 แจ้งแอดมินเมื่อมีนัดใหม่</li>
+            </ul>
+          </div>
+
+          <div class="card-t">🔀 เลือกรูปแบบที่เหมาะกับคุณ</div>
+          <div class="channel-type">
+            <div class="ch-card active" id="ch-notify" onclick="selCh(this,'notify')">
+              <div class="ch-card-icon">🔔</div>
+              <div class="ch-card-title">Line Notify</div>
+              <div class="ch-card-desc">ส่งแจ้งเตือนผ่านบัญชี "Line Notify" เข้ากลุ่มหรือแชทส่วนตัว</div>
+              <div class="ch-card-badge free">✅ ฟรี 100%</div>
+              <div style="margin-top:8px;font-size:11.5px;color:var(--err);">⚠️ ปิดบริการ 31 มี.ค. 2568</div>
+            </div>
+            <div class="ch-card" id="ch-msg" onclick="selCh(this,'messaging')">
+              <div class="ch-card-icon">💬</div>
+              <div class="ch-card-title">Line Messaging API</div>
+              <div class="ch-card-desc">ส่ง-รับข้อความผ่าน Official Account มีฟีเจอร์ครบครัน</div>
+              <div class="ch-card-badge paid">⭐ แนะนำ — ฟรีระดับหนึ่ง</div>
+            </div>
+            <div class="ch-card" id="ch-oa" onclick="selCh(this,'oa')">
+              <div class="ch-card-icon">🏢</div>
+              <div class="ch-card-title">Line OA + Broadcast</div>
+              <div class="ch-card-desc">ส่งข้อความหาผู้ติดตามทั้งหมด เหมาะกับคลินิกที่มีผู้ติดตามเยอะ</div>
+              <div class="ch-card-badge adv">🚀 ขั้นสูง</div>
+            </div>
+          </div>
+          <div id="ch-detail-notify" class="alert a-warn">⚠️ <strong>Line Notify ปิดบริการ 31 มีนาคม 2568</strong> — แนะนำเปลี่ยนไปใช้ Line Messaging API แทน</div>
+          <div id="ch-detail-messaging" class="hidden alert a-ok">✅ <strong>Line Messaging API</strong> — ฟรี 200 ข้อความ/เดือน หรืออัปเกรดเพื่อส่งไม่จำกัด เหมาะที่สุดสำหรับคลินิกขนาดเล็ก-กลาง</div>
+          <div id="ch-detail-oa" class="hidden alert a-info">ℹ️ <strong>Line OA Broadcast</strong> — ต้องมีผู้ป่วย "เพิ่มเพื่อน" กับ Official Account ก่อนจึงส่งได้</div>
+
+          <div class="card-t" style="margin-top:22px;">📊 เปรียบเทียบตัวเลือก</div>
+          <div class="table-w">
+            <table class="cmp-table">
+              <thead><tr><th>ฟีเจอร์</th><th>Line Notify</th><th>Messaging API (ฟรี)</th><th>Messaging API (จ่าย)</th></tr></thead>
+              <tbody>
+                <tr><td>ราคา</td><td class="cmp-ok">ฟรี</td><td class="cmp-ok">ฟรี</td><td class="cmp-warn">จ่ายตามการใช้งาน</td></tr>
+                <tr><td>ข้อความ/เดือน</td><td class="cmp-ok">ไม่จำกัด</td><td class="cmp-warn">200 ข้อความ</td><td class="cmp-ok">ไม่จำกัด</td></tr>
+                <tr><td>Push Message</td><td class="cmp-ok">✅</td><td class="cmp-ok">✅</td><td class="cmp-ok">✅</td></tr>
+                <tr><td>ตอบกลับอัตโนมัติ</td><td class="cmp-no">❌</td><td class="cmp-ok">✅</td><td class="cmp-ok">✅</td></tr>
+                <tr><td>Flex Message (การ์ด)</td><td class="cmp-no">❌</td><td class="cmp-ok">✅</td><td class="cmp-ok">✅</td></tr>
+                <tr><td>สถานะบริการ</td><td class="cmp-warn">⚠️ ปิด มี.ค. 68</td><td class="cmp-ok">ใช้ได้ต่อ</td><td class="cmp-ok">ใช้ได้ต่อ</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- SETUP -->
+        <div id="ltab-setup" class="hidden">
+          <div class="card-t">🔧 ขั้นตอนการตั้งค่า Line Messaging API</div>
+          <div class="guide-steps">
+            <div class="guide-step">
+              <div class="step-num">1</div>
+              <div class="step-body">
+                <div class="step-title">สร้าง LINE Developers Account</div>
+                <div class="step-desc">ไปที่ <a href="https://developers.line.biz" target="_blank" style="color:var(--accent);font-weight:600;">developers.line.biz</a> แล้ว Login ด้วยบัญชี LINE ของคลินิก</div>
+                <div class="step-img">
+                  <div class="step-img-title">💡 สิ่งที่ต้องเตรียม</div>
+                  <ul style="font-size:13px;color:var(--tx2);margin-left:18px;line-height:2;">
+                    <li>บัญชี LINE ของคลินิก (ไม่ใช่บัญชีส่วนตัว)</li>
+                    <li>อีเมลที่ผูกกับบัญชี LINE นั้น</li>
+                    <li>เบอร์โทรที่ยืนยัน OTP ได้</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <div class="guide-step">
+              <div class="step-num">2</div>
+              <div class="step-body">
+                <div class="step-title">สร้าง Provider และ Channel ใหม่</div>
+                <div class="step-desc">1. กด <strong>Create a new provider</strong> → ตั้งชื่อ เช่น "KLANG Lasik Clinic"<br>2. กด <strong>Create a Messaging API channel</strong><br>3. กรอกข้อมูลช่อง: ชื่อ, ประเภทธุรกิจ (Healthcare), อีเมล<br>4. กด <strong>Create</strong></div>
+              </div>
+            </div>
+            <div class="guide-step">
+              <div class="step-num">3</div>
+              <div class="step-body">
+                <div class="step-title">ดึง Channel Access Token</div>
+                <div class="step-desc">ใน Channel ที่สร้าง → แท็บ <strong>Messaging API</strong> → เลื่อนหา <strong>Channel access token</strong> → กด <strong>Issue</strong> → คัดลอก Token</div>
+                <div class="step-img">
+                  <div class="step-img-title" style="color:var(--err);">⚠️ อย่าแชร์ Token นี้กับใคร</div>
+                  <div style="background:#1e2433;border-radius:8px;padding:10px;font-family:'Courier New',monospace;font-size:12px;color:#a8c7fa;word-break:break-all;">BearerToken: qyBXa8dHJLKmXRFw...</div>
+                </div>
+              </div>
+            </div>
+            <div class="guide-step">
+              <div class="step-num">4</div>
+              <div class="step-body">
+                <div class="step-title">ดึง userId หรือ groupId ของผู้รับ</div>
+                <div class="step-desc">ผู้ป่วยต้อง <strong>เพิ่มเพื่อน</strong> กับ Official Account ก่อน เมื่อผู้ป่วยส่งข้อความมา ระบบจะได้รับ Webhook พร้อม userId — เก็บไว้เพื่อส่งข้อความในอนาคต</div>
+              </div>
+            </div>
+            <div class="guide-step">
+              <div class="step-num">5</div>
+              <div class="step-body">
+                <div class="step-title">กรอก Token ในระบบและทดสอบ</div>
+                <div class="step-desc">นำ Token มากรอกด้านล่าง แล้วกด "บันทึก" จากนั้นไปที่แท็บ "ทดสอบ"</div>
+                <div class="api-test-box" style="margin-top:12px;">
+                  <div class="api-test-title">⚙️ ตั้งค่า Token</div>
+                  <div class="fr">
+                    <div class="fg">
+                      <label>Channel Access Token *</label>
+                      <div style="display:flex;gap:7px;">
+                        <input type="password" id="setup-token" placeholder="วาง Channel Access Token จาก LINE Developers" style="flex:1;">
+                        <button class="btn btn-o btn-sm" onclick="toggleVis('setup-token',this)">👁</button>
+                      </div>
+                    </div>
+                    <div class="fg">
+                      <label>To (userId / groupId / roomId) *</label>
+                      <input id="setup-to" placeholder="Uxxxxxxxxxx หรือ Cxxxxxxxxxx">
+                    </div>
+                  </div>
+                  <button class="btn btn-line" onclick="saveSetupToken()">💾 บันทึก Token</button>
+                  <div id="setup-save-ok" class="alert a-ok hidden" style="margin-top:10px;">✅ บันทึก Token เรียบร้อย</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TEMPLATES -->
+        <div id="ltab-templates" class="hidden">
+          <div class="card-t">📝 ตัวอย่างข้อความแจ้งเตือน</div>
+          <div class="alert a-info">💡 ตัวแปรในวงเล็บปีกกา เช่น {ชื่อ} {วันที่} จะถูกแทนที่อัตโนมัติโดยระบบ</div>
+          <div class="tpl-grid">
+            <div class="tpl-card">
+              <div class="tpl-head line">📥 แจ้งแอดมิน — นัดใหม่</div>
+              <div class="tpl-body">📥 มีนัดหมายใหม่!
+👤 {ชื่อ} (อายุ {อายุ} ปี)
+📞 โทร {โทร}
+📅 {วันที่} เวลา {เวลา} น.
+👨‍⚕️ {แพทย์} | {รูปแบบ}
+🔢 รหัสนัด: {รหัสนัด}</div>
+              <div class="tpl-vars"><span class="tpl-var">{ชื่อ}</span><span class="tpl-var">{อายุ}</span><span class="tpl-var">{โทร}</span><span class="tpl-var">{วันที่}</span><span class="tpl-var">{เวลา}</span><span class="tpl-var">{แพทย์}</span><span class="tpl-var">{รหัสนัด}</span></div>
+            </div>
+            <div class="tpl-card">
+              <div class="tpl-head line">⏰ เตือนผู้ป่วย — ก่อนวันนัด</div>
+              <div class="tpl-body">🏥 เตือนความจำ!
+คุณ {ชื่อ} มีนัดตรวจตา LASIK
+📅 {วันที่} เวลา {เวลา} น.
+👨‍⚕️ แพทย์: {แพทย์}
+📋 รูปแบบ: {รูปแบบ}
+🔢 รหัสนัด: {รหัสนัด}
+
+กรุณามาตรงเวลา 🙏</div>
+              <div class="tpl-vars"><span class="tpl-var">{ชื่อ}</span><span class="tpl-var">{วันที่}</span><span class="tpl-var">{เวลา}</span><span class="tpl-var">{แพทย์}</span><span class="tpl-var">{รหัสนัด}</span></div>
+            </div>
+            <div class="tpl-card">
+              <div class="tpl-head line">✅ ยืนยันนัด</div>
+              <div class="tpl-body">✅ ยืนยันนัดหมายแล้ว!
+ศูนย์ตรวจและรักษาสายตา
+
+📅 {วันที่} เวลา {เวลา} น.
+👨‍⚕️ แพทย์: {แพทย์}
+🔢 รหัสนัด: {รหัสนัด}
+
+📍 สถานที่: xxx</div>
+              <div class="tpl-vars"><span class="tpl-var">{วันที่}</span><span class="tpl-var">{เวลา}</span><span class="tpl-var">{แพทย์}</span><span class="tpl-var">{รหัสนัด}</span></div>
+            </div>
+            <div class="tpl-card">
+              <div class="tpl-head line">📋 คำแนะนำเตรียมตัว</div>
+              <div class="tpl-body">📋 คำแนะนำสำหรับ {ชื่อ}
+
+{รูปแบบ}:
+1. งดคอนแทคเลนส์ก่อนมา 3 วัน
+2. ไม่ต้องงดน้ำงดอาหาร
+3. มีผู้ติดตามมาด้วย
+
+พบกัน {วันที่} เวลา {เวลา} น. 🙏</div>
+              <div class="tpl-vars"><span class="tpl-var">{ชื่อ}</span><span class="tpl-var">{รูปแบบ}</span><span class="tpl-var">{วันที่}</span><span class="tpl-var">{เวลา}</span></div>
+            </div>
+          </div>
+
+          <div class="card-t" style="margin-top:20px;">✏️ สร้างข้อความเอง + ส่งแจ้งเตือนด่วน</div>
+          <div class="fr">
+            <div class="fg">
+              <label>ข้อความ (ใช้ตัวแปรได้)</label>
+              <textarea id="tpl-custom" rows="8" oninput="updateMsgPreview()" style="width:100%;padding:11px;border:1.5px solid var(--bd);border-radius:var(--r);font-family:inherit;font-size:13.5px;background:var(--sur2);outline:none;resize:vertical;">🏥 เตือนความจำ!
+คุณ {ชื่อ} มีนัดตรวจตา LASIK
+📅 {วันที่} เวลา {เวลา} น.
+👨‍⚕️ แพทย์: {แพทย์}
+🔢 รหัสนัด: {รหัสนัด}</textarea>
+            </div>
+            <div class="fg">
+              <label>Preview ใน LINE</label>
+              <div class="msg-preview">
+                <div class="msg-preview-title">ตัวอย่างที่ผู้ป่วยจะเห็น</div>
+                <div style="display:flex;gap:8px;align-items:flex-end;">
+                  <div style="width:32px;height:32px;border-radius:50%;background:var(--line-green);display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;flex-shrink:0;">K</div>
+                  <div>
+                    <div style="font-size:11px;color:var(--tx3);margin-bottom:4px;">KLANG LASIK</div>
+                    <div class="msg-bubble" id="msg-preview-text">🏥 เตือนความจำ!
+คุณ สมชาย ใจดี มีนัดตรวจตา LASIK
+📅 15 พฤษภาคม 2568 เวลา 07:30 น.
+👨‍⚕️ แพทย์: พ.เมธินี
+🔢 รหัสนัด: L10000001</div>
+                    <div class="msg-time">07:30</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div style="margin-top:14px;">
+            <div class="card-t" style="font-size:14px;">📤 ส่งแจ้งเตือนด่วนให้ผู้ป่วย</div>
+            <div class="api-input-row">
+              <input id="quick-search" placeholder="ค้นหาผู้ป่วย (ชื่อ / รหัสนัด / เบอร์)">
+              <button class="btn btn-p btn-sm" onclick="quickSearch()">ค้นหา</button>
+            </div>
+            <div id="quick-result" class="ln-manual-result"></div>
+          </div>
+        </div>
+
+        <!-- TEST -->
+        <div id="ltab-test" class="hidden">
+          <div class="line-status-bar inactive" id="api-status-bar">
+            <div class="ls-icon">💬</div>
+            <div class="ls-info">
+              <div class="ls-title">Line Messaging API</div>
+              <div class="ls-sub" id="api-status-sub">ยังไม่ได้ตั้งค่า Token — ไปที่แท็บ "ตั้งค่า" ก่อน</div>
+            </div>
+            <div class="ls-badge" id="api-status-badge">ยังไม่พร้อม</div>
+          </div>
+
+          <div class="api-test-box">
+            <div class="api-test-title">📤 ส่งข้อความทดสอบ (Push Message)</div>
+            <div class="fr">
+              <div class="fg">
+                <label>Channel Access Token</label>
+                <div style="display:flex;gap:7px;">
+                  <input type="password" id="test-token" placeholder="Channel Access Token" style="flex:1;" oninput="checkTokenStatus()">
+                  <button class="btn btn-o btn-sm" onclick="toggleVis('test-token',this)">👁</button>
+                </div>
+              </div>
+              <div class="fg">
+                <label>To (userId / groupId)</label>
+                <input id="test-to" placeholder="Uxxxxxxxxxx หรือ Cxxxxxxxxxx" oninput="checkTokenStatus()">
+              </div>
+            </div>
+            <div class="fg" style="margin-bottom:12px;">
+              <label>ข้อความที่ต้องการส่ง</label>
+              <textarea class="api-msg-area" id="test-msg">🧪 ทดสอบระบบ LINE Messaging API
+✅ เชื่อมต่อสำเร็จ — ศูนย์ตรวจและรักษาสายตา
+📅 ระบบพร้อมใช้งาน</textarea>
+            </div>
+            <div style="display:flex;gap:9px;flex-wrap:wrap;margin-bottom:12px;">
+              <button class="btn btn-line" onclick="doSendMsg()">📤 ส่งข้อความทดสอบ</button>
+              <button class="btn btn-o btn-sm" onclick="clearTestResult()">🗑 ล้าง</button>
+            </div>
+            <div style="font-size:12.5px;color:var(--tx2);margin-bottom:8px;">ผลลัพธ์:</div>
+            <div id="test-result" class="api-result">ผลลัพธ์จะแสดงที่นี่...</div>
+          </div>
+
+          <div class="card-t" style="margin-top:22px;">💻 โค้ดตัวอย่าง</div>
+          <div style="border-bottom:1.5px solid var(--bd);margin-bottom:0;display:flex;overflow-x:auto;">
+            <div class="tab on" onclick="codeTab('js',this)" style="font-size:13px;padding:8px 16px;">JavaScript / Node.js</div>
+            <div class="tab" onclick="codeTab('python',this)" style="font-size:13px;padding:8px 16px;">Python</div>
+            <div class="tab" onclick="codeTab('gas',this)" style="font-size:13px;padding:8px 16px;">Google Apps Script</div>
+            <div class="tab" onclick="codeTab('php',this)" style="font-size:13px;padding:8px 16px;">PHP</div>
+          </div>
+          <div id="code-js" class="code-block">
+            <div class="code-copy"><button onclick="copyCode('code-js')">📋 คัดลอก</button></div>
+<pre><span class="code-comment">// Node.js — ส่ง Push Message ด้วย LINE Messaging API</span>
+<span class="code-kw">const</span> axios = <span class="code-fn">require</span>(<span class="code-str">'axios'</span>);
+
+<span class="code-kw">async function</span> <span class="code-fn">sendLineMessage</span>(userId, message) {
+  <span class="code-kw">const</span> token = <span class="code-str">'YOUR_CHANNEL_ACCESS_TOKEN'</span>;
+  <span class="code-kw">try</span> {
+    <span class="code-kw">const</span> response = <span class="code-kw">await</span> axios.<span class="code-fn">post</span>(
+      <span class="code-str">'https://api.line.me/v2/bot/message/push'</span>,
+      { to: userId, messages: [{ type: <span class="code-str">'text'</span>, text: message }] },
+      { headers: { <span class="code-str">'Content-Type'</span>: <span class="code-str">'application/json'</span>, <span class="code-str">'Authorization'</span>: <span class="code-str">`Bearer ${token}`</span> } }
+    );
+    console.<span class="code-fn">log</span>(<span class="code-str">'ส่งสำเร็จ:'</span>, response.data);
+  } <span class="code-kw">catch</span> (err) {
+    console.<span class="code-fn">error</span>(<span class="code-str">'เกิดข้อผิดพลาด:'</span>, err.response?.data);
+  }
+}
+<span class="code-fn">sendLineMessage</span>(<span class="code-str">'Uxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'</span>, <span class="code-str">'🏥 เตือนความจำ! คุณมีนัดตรวจตา LASIK พรุ่งนี้'</span>);</pre>
+          </div>
+          <div id="code-python" class="code-block hidden">
+            <div class="code-copy"><button onclick="copyCode('code-python')">📋 คัดลอก</button></div>
+<pre><span class="code-comment"># Python — ส่ง Push Message ด้วย LINE Messaging API</span>
+<span class="code-kw">import</span> requests, json
+
+<span class="code-kw">def</span> <span class="code-fn">send_line_message</span>(user_id, message):
+    token = <span class="code-str">"YOUR_CHANNEL_ACCESS_TOKEN"</span>
+    headers = { <span class="code-str">"Content-Type"</span>: <span class="code-str">"application/json"</span>, <span class="code-str">"Authorization"</span>: <span class="code-str">f"Bearer {token}"</span> }
+    payload = { <span class="code-str">"to"</span>: user_id, <span class="code-str">"messages"</span>: [{ <span class="code-str">"type"</span>: <span class="code-str">"text"</span>, <span class="code-str">"text"</span>: message }] }
+    res = requests.<span class="code-fn">post</span>(<span class="code-str">"https://api.line.me/v2/bot/message/push"</span>, headers=headers, data=json.<span class="code-fn">dumps</span>(payload))
+    <span class="code-fn">print</span>(<span class="code-str">"ส่งสำเร็จ!"</span> <span class="code-kw">if</span> res.status_code == <span class="code-val">200</span> <span class="code-kw">else</span> <span class="code-str">f"Error: {res.status_code} {res.json()}"</span>)
+
+<span class="code-fn">send_line_message</span>(<span class="code-str">"Uxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"</span>, <span class="code-str">"🏥 เตือนความจำ! คุณมีนัดตรวจตา LASIK พรุ่งนี้"</span>)</pre>
+          </div>
+          <div id="code-gas" class="code-block hidden">
+            <div class="code-copy"><button onclick="copyCode('code-gas')">📋 คัดลอก</button></div>
+<pre><span class="code-comment">// Google Apps Script — ส่ง LINE Message อัตโนมัติ</span>
+<span class="code-comment">// ตั้ง Trigger: Time-driven → Day timer → 08:00–09:00</span>
+
+<span class="code-kw">const</span> CHANNEL_TOKEN = <span class="code-str">'YOUR_CHANNEL_ACCESS_TOKEN'</span>;
+<span class="code-kw">const</span> SHEET_ID = <span class="code-str">'YOUR_GOOGLE_SHEET_ID'</span>;
+<span class="code-kw">const</span> REMIND_DAYS = <span class="code-val">1</span>;
+
+<span class="code-kw">function</span> <span class="code-fn">sendDailyReminders</span>() {
+  <span class="code-kw">const</span> target = <span class="code-kw">new</span> <span class="code-fn">Date</span>();
+  target.<span class="code-fn">setDate</span>(target.<span class="code-fn">getDate</span>() + REMIND_DAYS);
+  <span class="code-kw">const</span> targetStr = Utilities.<span class="code-fn">formatDate</span>(target, <span class="code-str">"Asia/Bangkok"</span>, <span class="code-str">"yyyy-MM-dd"</span>);
+  <span class="code-kw">const</span> data = SpreadsheetApp.<span class="code-fn">openById</span>(SHEET_ID).<span class="code-fn">getActiveSheet</span>().<span class="code-fn">getDataRange</span>().<span class="code-fn">getValues</span>();
+  <span class="code-comment">// Headers: id, name, userId, doctor, type, date, time, status</span>
+  <span class="code-kw">for</span> (<span class="code-kw">let</span> i = <span class="code-val">1</span>; i < data.length; i++) {
+    <span class="code-kw">const</span> [id, name, userId, doctor, type, date, time, status] = data[i];
+    <span class="code-kw">if</span> (date === targetStr && status === <span class="code-str">'confirmed'</span>) {
+      <span class="code-fn">sendPushMessage</span>(userId, <span class="code-str">`🏥 เตือนความจำ!\nคุณ ${name} มีนัดตรวจตา LASIK พรุ่งนี้\n📅 ${date} เวลา ${time} น.\n👨‍⚕️ ${doctor} | ${type}\n🔢 ${id}`</span>);
+    }
+  }
+}
+
+<span class="code-kw">function</span> <span class="code-fn">sendPushMessage</span>(userId, message) {
+  <span class="code-kw">const</span> res = UrlFetchApp.<span class="code-fn">fetch</span>(<span class="code-str">'https://api.line.me/v2/bot/message/push'</span>, {
+    method: <span class="code-str">'post'</span>, contentType: <span class="code-str">'application/json'</span>,
+    headers: { Authorization: <span class="code-str">`Bearer ${CHANNEL_TOKEN}`</span> },
+    payload: JSON.<span class="code-fn">stringify</span>({ to: userId, messages: [{ type: <span class="code-str">'text'</span>, text: message }] }),
+    muteHttpExceptions: <span class="code-kw">true</span>
+  });
+  Logger.<span class="code-fn">log</span>(<span class="code-str">'Status: '</span> + res.<span class="code-fn">getResponseCode</span>());
+}</pre>
+          </div>
+          <div id="code-php" class="code-block hidden">
+            <div class="code-copy"><button onclick="copyCode('code-php')">📋 คัดลอก</button></div>
+<pre><span class="code-comment">&lt;?php</span>
+<span class="code-kw">function</span> <span class="code-fn">sendLineMessage</span>(<span class="code-val">$userId</span>, <span class="code-val">$message</span>) {
+    <span class="code-val">$token</span> = <span class="code-str">'YOUR_CHANNEL_ACCESS_TOKEN'</span>;
+    <span class="code-val">$ch</span> = curl_init(<span class="code-str">'https://api.line.me/v2/bot/message/push'</span>);
+    curl_setopt_array(<span class="code-val">$ch</span>, [
+        CURLOPT_POST => <span class="code-kw">true</span>,
+        CURLOPT_RETURNTRANSFER => <span class="code-kw">true</span>,
+        CURLOPT_HTTPHEADER => [<span class="code-str">'Content-Type: application/json'</span>, <span class="code-str">'Authorization: Bearer '</span>.<span class="code-val">$token</span>],
+        CURLOPT_POSTFIELDS => json_encode([<span class="code-str">'to'</span>=><span class="code-val">$userId</span>, <span class="code-str">'messages'</span>=>[[ <span class="code-str">'type'</span>=><span class="code-str">'text'</span>, <span class="code-str">'text'</span>=><span class="code-val">$message</span>]]])
+    ]);
+    <span class="code-val">$code</span> = curl_getinfo(<span class="code-val">$ch</span>, CURLINFO_HTTP_CODE);
+    curl_close(<span class="code-val">$ch</span>);
+    <span class="code-fn">echo</span> <span class="code-val">$code</span> == <span class="code-val">200</span> ? <span class="code-str">"ส่งสำเร็จ!\n"</span> : <span class="code-str">"Error: $code\n"</span>;
+}
+<span class="code-fn">sendLineMessage</span>(<span class="code-str">'Uxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'</span>, <span class="code-str">'🏥 เตือนความจำ! คุณมีนัดตรวจตา LASIK พรุ่งนี้'</span>);
+<span class="code-comment">?&gt;</span></pre>
+          </div>
+
+          <div class="card-t" style="margin-top:22px;">📋 ประวัติการส่ง</div>
+          <div style="display:flex;justify-content:flex-end;margin-bottom:10px;">
+            <button class="btn btn-o btn-sm" onclick="clearLog()">🗑 ล้าง log</button>
+          </div>
+          <div id="send-log" style="display:flex;flex-direction:column;gap:6px;max-height:220px;overflow-y:auto;">
+            <div style="text-align:center;color:var(--tx3);padding:20px;font-size:13px;">ยังไม่มีประวัติการส่ง</div>
+          </div>
+        </div>
+
+        <!-- FAQ -->
+        <div id="ltab-faq" class="hidden">
+          <div class="faq-item" onclick="togFaq(this)">
+            <div class="faq-q">🤔 Line Notify กับ Messaging API ต่างกันอย่างไร? <span class="faq-icon">+</span></div>
+            <div class="faq-a"><strong>Line Notify</strong> ส่งผ่านบัญชีสาธารณะ "Line Notify" และ <strong>ปิดบริการ 31 มีนาคม 2568</strong><br><br><strong>Messaging API</strong> ส่งผ่าน Official Account ของคลินิกเอง มีฟีเจอร์ครบกว่า และยังใช้งานได้ต่อเนื่อง — <strong>แนะนำให้ใช้ตัวนี้</strong></div>
+          </div>
+          <div class="faq-item" onclick="togFaq(this)">
+            <div class="faq-q">💰 Line Messaging API เสียเงินไหม? <span class="faq-icon">+</span></div>
+            <div class="faq-a"><strong>ฟรีแพลน</strong>: ส่งได้ 200 Push Messages/เดือน ฟรี เพียงพอสำหรับคลินิกที่มีนัดไม่เกิน 200 คน/เดือน<br><br><strong>Paid plan</strong>: ประมาณ 5 USD (~175 บาท) สำหรับ 1,000 ข้อความเพิ่ม</div>
+          </div>
+          <div class="faq-item" onclick="togFaq(this)">
+            <div class="faq-q">📱 ผู้ป่วยต้องทำอะไรเพิ่มเติมไหม? <span class="faq-icon">+</span></div>
+            <div class="faq-a">ผู้ป่วยต้อง <strong>"เพิ่มเพื่อน" (Add Friend)</strong> กับ Official Account ของคลินิกก่อน จึงสามารถรับข้อความได้<br><br>วิธีแก้: ติดป้าย QR Code ของ OA ในคลินิก หรือส่ง Link เพิ่มเพื่อนในอีเมลยืนยันนัด</div>
+          </div>
+          <div class="faq-item" onclick="togFaq(this)">
+            <div class="faq-q">🔒 ข้อมูลผู้ป่วยปลอดภัยไหมเมื่อส่งผ่าน LINE? <span class="faq-icon">+</span></div>
+            <div class="faq-a">LINE ใช้การเข้ารหัส SSL/TLS ปลอดภัยในระดับที่ยอมรับได้ แนะนำ: ไม่ส่งข้อมูลอ่อนไหวผ่าน LINE เช่น ผลตรวจโดยละเอียด และตรวจสอบว่าผู้ป่วยยินยอมรับข้อมูลทาง LINE ตาม PDPA</div>
+          </div>
+          <div class="faq-item" onclick="togFaq(this)">
+            <div class="faq-q">⚙️ ถ้าไม่มีโปรแกรมเมอร์ จะตั้งค่าเองได้ไหม? <span class="faq-icon">+</span></div>
+            <div class="faq-a">ได้ — วิธีง่ายที่สุด:<br>1. ใช้ <strong>Google Apps Script</strong> (ฟรี) — ดูโค้ดตัวอย่างในแท็บ "ทดสอบ"<br>2. ใช้ <strong>Make</strong> หรือ <strong>Zapier</strong> — เชื่อมต่อแบบ Drag & Drop ไม่ต้องเขียนโค้ด<br>3. Google Sheet + Apps Script Trigger ทุกเช้าส่งได้เลย</div>
+          </div>
+          <div class="faq-item" onclick="togFaq(this)">
+            <div class="faq-q">🚫 เกิดอะไรขึ้นถ้า Token หมดอายุหรือ Revoke? <span class="faq-icon">+</span></div>
+            <div class="faq-a">Channel Access Token แบบ Long-lived ไม่มีวันหมดอายุ แต่ถ้า Revoke หรือออก Token ใหม่ Token เก่าจะใช้งานไม่ได้ทันที ต้องอัปเดต Token ในระบบและแท็บ "ตั้งค่า"</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+</div><!-- /main -->
+
+<!-- POPUP: SUCCESS -->
+<div class="ov" id="ov-ok">
+  <div class="pop">
+    <div class="pop-ic">🎉</div>
+    <h2>บันทึกนัดหมายเรียบร้อย!</h2>
+    <p>เจ้าหน้าที่จะติดต่อกลับเพื่อยืนยันนัดหมายภายใน 1–2 วันทำการ</p>
+    <div class="pop-ref" id="pop-ref">รหัสนัด: —</div>
+    <button class="btn btn-p" style="width:100%;" onclick="closeOk()">✅ รับทราบ</button>
+  </div>
+</div>
+
+<!-- POPUP: CONFIRM -->
+<div class="ov" id="ov-cfm">
+  <div class="pop">
+    <div class="pop-ic">⚠️</div>
+    <h2 id="cfm-t">ยืนยัน?</h2>
+    <p id="cfm-b"></p>
+    <div style="display:flex;gap:11px;justify-content:center;">
+      <button class="btn btn-o" onclick="closeCfm()">ยกเลิก</button>
+      <button class="btn btn-p" id="cfm-ok">ยืนยัน</button>
+    </div>
+  </div>
+</div>
+
+<!-- POPUP: RESCHEDULE -->
+<div class="ov" id="ov-res">
+  <div class="pop" style="max-width:480px;text-align:left;">
+    <div style="font-size:32px;margin-bottom:12px;">📅</div>
+    <h2 style="text-align:left;margin-bottom:14px;">เลื่อนนัดหมาย</h2>
+    <div class="fr">
+      <div class="fg"><label>วันที่ใหม่ *</label><input type="date" id="res-dt"></div>
+      <div class="fg"><label>เวลา *</label><select id="res-tm"><option value="07:30">07:30 น.</option><option value="14:00">14:00 น.</option></select></div>
+    </div>
+    <div class="fg" style="margin-bottom:16px;"><label>เหตุผล</label><input id="res-reason" placeholder="ระบุเหตุผล (ถ้ามี)"></div>
+    <div style="display:flex;gap:11px;justify-content:flex-end;">
+      <button class="btn btn-o" onclick="closeRes()">ยกเลิก</button>
+      <button class="btn btn-w" onclick="doReschedule()">📅 ยืนยันเลื่อนนัด</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const THM=['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
+const THDl=['อาทิตย์','จันทร์','อังคาร','พุธ','พฤหัสบดี','ศุกร์','เสาร์'];
+const THDs=['อา','จ','อ','พ','พฤ','ศ','ส'];
+
+const DEF_HOLS=[
+  {d:'2025-04-13',n:'วันสงกรานต์'},{d:'2025-04-14',n:'วันสงกรานต์'},{d:'2025-04-15',n:'วันสงกรานต์'},
+  {d:'2025-05-01',n:'วันแรงงาน'},{d:'2025-05-05',n:'วันฉัตรมงคล'},
+  {d:'2025-07-28',n:'วันเฉลิมพระชนมพรรษา ร.10'},{d:'2025-08-12',n:'วันแม่แห่งชาติ'},
+  {d:'2025-10-23',n:'วันปิยมหาราช'},{d:'2025-12-05',n:'วันพ่อแห่งชาติ'},
+  {d:'2026-01-01',n:'วันขึ้นปีใหม่'},{d:'2026-04-06',n:'วันจักรี'},
+  {d:'2026-04-13',n:'วันสงกรานต์'},{d:'2026-04-14',n:'วันสงกรานต์'},{d:'2026-04-15',n:'วันสงกรานต์'},
+  {d:'2026-05-01',n:'วันแรงงาน'},{d:'2026-07-28',n:'วันเฉลิมพระชนมพรรษา ร.10'},
+  {d:'2026-08-12',n:'วันแม่แห่งชาติ'},{d:'2026-12-05',n:'วันพ่อแห่งชาติ'},
+  {d:'2026-12-10',n:'วันรัฐธรรมนูญ'},{d:'2026-12-31',n:'วันสิ้นปี'},
+];
+
+const DEF_INSTR_EXAM=`1. งดสวมคอนแทคเลนส์ก่อนมาตรวจ 3 วัน (ชนิดนิ่ม)\n2. ไม่ต้องงดน้ำงดอาหาร\n3. ควรมีผู้ติดตามมาด้วย\n4. นำบัตรประชาชนมาด้วย`;
+const DEF_INSTR_SURG=`1. งดคอนแทคเลนส์อย่างน้อย 7 วัน\n2. งดอาหารและน้ำ 6 ชั่วโมงก่อนผ่าตัด\n3. ไม่ทาครีมหรือแต่งหน้า\n4. ต้องมีผู้รับกลับบ้าน ห้ามขับรถเอง\n5. นำบัตรประชาชนมาด้วย`;
+
+const DB={
+  A:()=>{try{return JSON.parse(localStorage.getItem('lk_a')||'[]');}catch{return[];}},
+  sA:a=>localStorage.setItem('lk_a',JSON.stringify(a)),
+  H:()=>{try{const h=localStorage.getItem('lk_h');return h?JSON.parse(h):JSON.parse(JSON.stringify(DEF_HOLS));}catch{return JSON.parse(JSON.stringify(DEF_HOLS));}},
+  sH:h=>localStorage.setItem('lk_h',JSON.stringify(h)),
+  hEn:()=>{const v=localStorage.getItem('lk_hen');return v===null?true:v==='true';},
+  sHEn:v=>localStorage.setItem('lk_hen',v?'true':'false'),
+  Q:()=>{try{return JSON.parse(localStorage.getItem('lk_q')||'{}');}catch{return{};}},
+  sQ:q=>localStorage.setItem('lk_q',JSON.stringify(q)),
+  I:()=>{try{return JSON.parse(localStorage.getItem('lk_i')||JSON.stringify({exam:DEF_INSTR_EXAM,surg:DEF_INSTR_SURG}));}catch{return{exam:DEF_INSTR_EXAM,surg:DEF_INSTR_SURG};}},
+  sI:i=>localStorage.setItem('lk_i',JSON.stringify(i)),
+  LN:()=>{try{return JSON.parse(localStorage.getItem('lk_ln2')||'{}');}catch{return{};}},
+  sLN:v=>localStorage.setItem('lk_ln2',JSON.stringify(v)),
+  Log:()=>{try{return JSON.parse(localStorage.getItem('lk_sendlog')||'[]');}catch{return[];}},
+  sLog:v=>localStorage.setItem('lk_sendlog',JSON.stringify(v.slice(0,80))),
+};
+
+function ds(d){return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
+function wom(d){const f=new Date(d.getFullYear(),d.getMonth(),1);return Math.ceil((d.getDate()+f.getDay())/7);}
+function isHol(d){if(!DB.hEn())return false;return DB.H().some(h=>h.d===ds(d));}
+function isSlotClosed(dateStr,slot){const q=DB.Q();return!!(q[dateStr]&&q[dateStr][slot+'_closed']);}
+function qMax(dateStr,slot){const q=DB.Q();return(q[dateStr]&&q[dateStr][slot])||5;}
+function cntSlot(dateStr,t){return DB.A().filter(a=>a.date===dateStr&&a.time===t&&a.status!=='cancelled').length;}
+function genId(){return'L'+Date.now().toString().slice(-8);}
+
+let visionUnknown={rv:false,lv:false};
+
+function toggleUnknown(side){
+  const cb=document.getElementById(side+'-unk');
+  const lbl=document.getElementById(side+'-unk-lbl');
+  const sph=document.getElementById(side+'-sph');
+  const cyl=document.getElementById(side+'-cyl');
+  visionUnknown[side]=cb.checked;
+  lbl.classList.toggle('on',cb.checked);
+  if(cb.checked){
+    sph.disabled=true;sph.value='';sph.style.opacity='.4';
+    cyl.disabled=true;cyl.value='';cyl.style.opacity='.4';
+    document.getElementById(side+'-hint').textContent='✅ ไม่ทราบค่าสายตา';
+  } else {
+    sph.disabled=false;sph.style.opacity='1';
+    cyl.disabled=false;cyl.style.opacity='1';
+    document.getElementById(side+'-hint').textContent='';
+  }
+  document.getElementById('fg-'+side).classList.remove('err');
+}
+
+function onVisionChange(side){
+  const sph=document.getElementById(side+'-sph').value;
+  const cyl=document.getElementById(side+'-cyl').value;
+  const hint=document.getElementById(side+'-hint');
+  if(!sph&&!cyl){hint.textContent='';return;}
+  let parts=[];
+  if(sph){const v=parseFloat(sph);if(v<0)parts.push(`สั้น ${sph}D`);else if(v>0)parts.push(`ยาว +${sph}D`);else parts.push('0.00D');}
+  if(cyl){const v=parseFloat(cyl);parts.push(`เอียง ${v>0?'+':''}${cyl}D`);}
+  hint.textContent='→ '+parts.join(' / ');
+}
+
+function getVisionObj(side){
+  if(visionUnknown[side])return{sph:'',cyl:'',label:'ไม่ทราบค่าสายตา'};
+  const sph=document.getElementById(side+'-sph').value;
+  const cyl=document.getElementById(side+'-cyl').value;
+  if(!sph&&!cyl)return null;
+  let parts=[];
+  if(sph){const v=parseFloat(sph);if(v<0)parts.push(`สั้น ${sph}D`);else if(v>0)parts.push(`ยาว +${sph}D`);else parts.push('0.00D');}
+  if(cyl){const v=parseFloat(cyl);parts.push(`เอียง ${v>0?'+':''}${cyl}D`);}
+  return{sph,cyl,label:parts.join(' / ')};
+}
+
+let customMeds=[];
+
+function togChip(el,grpId){
+  setTimeout(()=>{
+    const cb=el.querySelector('input');
+    el.classList.toggle('on',cb.checked);
+    const grp=document.getElementById(grpId);
+    const noneEl=grp.querySelector('[value="ไม่มีโรคประจำตัว"],[value="ไม่มี"]');
+    if(noneEl&&cb!==noneEl&&cb.checked){noneEl.checked=false;noneEl.parentElement.classList.remove('on');}
+    if(grpId==='dis-grp'){
+      const otherCb=document.getElementById('dis-other-chip').querySelector('input');
+      document.getElementById('dis-other-wrap').classList.toggle('show',otherCb.checked);
+    }
+  },0);
+}
+
+function togChipNone(el,grpId){
+  setTimeout(()=>{
+    const cb=el.querySelector('input');
+    el.classList.toggle('on',cb.checked);
+    if(cb.checked){
+      const grp=document.getElementById(grpId);
+      grp.querySelectorAll('input').forEach(x=>{if(x!==cb){x.checked=false;x.parentElement.classList.remove('on');}});
+      if(grpId==='dis-grp'){document.getElementById('dis-other-wrap').classList.remove('show');}
+      if(grpId==='med-grp'){document.getElementById('med-custom-wrap').classList.remove('show');customMeds=[];renderMedTags();}
+    }
+  },0);
+}
+
+function togMedCustom(el){
+  setTimeout(()=>{
+    const cb=el.querySelector('input');
+    el.classList.toggle('on',cb.checked);
+    document.getElementById('med-custom-wrap').classList.toggle('show',cb.checked);
+    const noneEl=document.getElementById('chip-nomed').querySelector('input');
+    if(cb.checked&&noneEl.checked){noneEl.checked=false;document.getElementById('chip-nomed').classList.remove('on');}
+  },0);
+}
+
+function addMedTag(){
+  const inp=document.getElementById('med-custom-input');
+  const val=inp.value.trim();
+  if(!val)return;
+  if(!customMeds.includes(val))customMeds.push(val);
+  inp.value='';renderMedTags();
+}
+function removeMedTag(i){customMeds.splice(i,1);renderMedTags();}
+function renderMedTags(){
+  document.getElementById('med-tag-list').innerHTML=customMeds.map((m,i)=>`<span class="med-tag">${m}<button onclick="removeMedTag(${i})">✕</button></span>`).join('');
+}
+
+function getChips(grpId){return[...document.querySelectorAll('#'+grpId+' input:checked')].map(x=>x.value).filter(v=>v!=='__other__'&&v!=='__custom__');}
+function getDiseases(){
+  const base=getChips('dis-grp').filter(v=>v!=='ไม่มีโรคประจำตัว');
+  const otherCb=document.getElementById('dis-other-chip').querySelector('input');
+  if(otherCb.checked){const txt=document.getElementById('dis-other-text').value.trim();if(txt)base.push(txt);}
+  const none=document.getElementById('chip-none').querySelector('input');
+  if(none.checked)return['ไม่มีโรคประจำตัว'];
+  return base.length?base:[];
+}
+function getMeds(){
+  const base=getChips('med-grp').filter(v=>v!=='ไม่มี');
+  const custCb=document.getElementById('med-custom-chip').querySelector('input');
+  if(custCb.checked&&customMeds.length)base.push(...customMeds);
+  const none=document.getElementById('chip-nomed').querySelector('input');
+  if(none.checked)return['ไม่มี'];
+  return base.length?base:[];
+}
+
+let S={step:1,nm:'',ag:'',ph:'',em:'',rv:{},lv:{},diseases:[],meds:[],doc:'',type:'',date:null,time:'07:30',calY:new Date().getFullYear(),calM:new Date().getMonth()};
+let resId='';
+
+function showPage(p,btn){
+  document.querySelectorAll('.page').forEach(x=>x.classList.remove('on'));
+  document.querySelectorAll('.nb').forEach(x=>x.classList.remove('on'));
+  document.getElementById('pg-'+p).classList.add('on');
+  btn.classList.add('on');
+  if(p==='admin'){renderStats();syncHolToggle();}
+}
+
+function setStep(n){
+  for(let i=1;i<=4;i++){
+    document.getElementById('fs'+i).classList.toggle('hidden',i!==n);
+    const s=document.getElementById('s'+i);
+    s.className='stp'+(i<n?' done':i===n?' act':'');
+    s.querySelector('.stp-n').textContent=i<n?'✓':i;
+    if(i<4)document.getElementById('ln'+i).className='stp-line'+(i<n?' done':'');
+  }
+  S.step=n;window.scrollTo({top:0,behavior:'smooth'});
+}
+function nxt(from){
+  if(from===1&&!v1())return;
+  if(from===2&&!v2())return;
+  if(from===3&&!v3())return;
+  if(from===2){S.date=null;S.time='07:30';buildCal();}
+  if(from===3)buildSum();
+  setStep(from+1);
+}
+function prv(from){setStep(from-1);}
+
+function v1(){
+  let ok=true;
+  function chk(fg,cond){document.getElementById(fg).classList.toggle('err',!cond);if(!cond)ok=false;}
+  chk('fg-nm',document.getElementById('f-nm').value.trim().length>1);
+  chk('fg-ag',+document.getElementById('f-ag').value>=15&&+document.getElementById('f-ag').value<=99);
+  chk('fg-ph',/^0\d{8,9}$/.test(document.getElementById('f-ph').value));
+  const rvOk=visionUnknown.rv||(document.getElementById('rv-sph').value!==''||document.getElementById('rv-cyl').value!=='');
+  const lvOk=visionUnknown.lv||(document.getElementById('lv-sph').value!==''||document.getElementById('lv-cyl').value!=='');
+  chk('fg-rv',rvOk);chk('fg-lv',lvOk);
+  if(!ok){document.getElementById('f-nm').scrollIntoView({behavior:'smooth'});return false;}
+  S.nm=document.getElementById('f-nm').value.trim();S.ag=document.getElementById('f-ag').value;
+  S.ph=document.getElementById('f-ph').value;S.em=document.getElementById('f-em').value;
+  S.rv=getVisionObj('rv')||{sph:'',cyl:'',label:''};S.lv=getVisionObj('lv')||{sph:'',cyl:'',label:''};
+  S.diseases=getDiseases();S.meds=getMeds();return true;
+}
+function v2(){if(!S.doc){alert('กรุณาเลือกแพทย์ผู้ตรวจ');return false;}if(!S.type){alert('กรุณาเลือกรูปแบบนัดหมาย');return false;}return true;}
+function v3(){if(!S.date){alert('กรุณาเลือกวันนัดหมาย');return false;}return true;}
+
+function selDoc(el,val){
+  document.querySelectorAll('#doc-grp .rchip').forEach(x=>x.classList.remove('on'));
+  el.classList.add('on');S.doc=val;
+  updSurgOpt();
+  const notes={'ไม่ระบุแพทย์':'สามารถนัดได้ทุกวันที่เปิดให้บริการ','พ.เมธินี':'จันทร์ + ศุกร์ทุกสัปดาห์','พ.เอกอนันต์':'พุธ ในเวลาราชการ (07:30) เท่านั้น\n⚠️ ไม่รับนัดตรวจเช้าผ่าตัดเย็น','พ.นพมาศ':'พุธ ส.1,3,5 + พฤหัสทุกสัปดาห์ + ศุกร์'};
+  const el2=document.getElementById('doc-note');
+  el2.textContent='📋 '+(notes[val]||'');el2.classList.remove('hidden');
+}
+function selType(el,val){
+  if(el.classList.contains('dis'))return;
+  document.querySelectorAll('#type-grp .rchip').forEach(x=>x.classList.remove('on'));
+  el.classList.add('on');S.type=val;
+  const n=document.getElementById('type-note');
+  if(val==='ตรวจเช้าผ่าตัดเย็น'){n.textContent='⚠️ เวลา 07:30 น. เท่านั้น — ไม่สามารถนัดในวันเสาร์ได้';n.classList.remove('hidden');}
+  else n.classList.add('hidden');
+}
+function updSurgOpt(){
+  const el=document.getElementById('surg-opt');
+  if(S.doc==='พ.เอกอนันต์'){el.classList.add('dis');if(S.type==='ตรวจเช้าผ่าตัดเย็น'){S.type='';document.querySelectorAll('#type-grp .rchip').forEach(x=>x.classList.remove('on'));document.getElementById('type-note').classList.add('hidden');}}
+  else el.classList.remove('dis');
+}
+
+function isAvDay(d){
+  const today=new Date();today.setHours(0,0,0,0);
+  if(d<today||isHol(d))return false;
+  const dow=d.getDay(),w=wom(d),doc=S.doc,type=S.type;
+  if(dow===0||dow===2)return false;
+  if(dow===6){if(type==='ตรวจเช้าผ่าตัดเย็น')return false;if(doc!==''&&doc!=='ไม่ระบุแพทย์')return false;return[1,2,4,5].includes(w);}
+  if(dow===1)return doc==='พ.เมธินี'||doc==='ไม่ระบุแพทย์';
+  if(dow===3){if(doc==='พ.เอกอนันต์')return true;if(doc==='พ.นพมาศ')return[1,3,5].includes(w);return doc==='ไม่ระบุแพทย์';}
+  if(dow===4)return doc==='พ.นพมาศ'||doc==='ไม่ระบุแพทย์';
+  if(dow===5)return doc==='พ.นพมาศ'||doc==='พ.เมธินี'||doc==='ไม่ระบุแพทย์';
+  return false;
+}
+
+function buildCal(){renderCal();}
+function renderCal(){
+  const yr=S.calY,mo=S.calM;
+  document.getElementById('cal-mo').textContent=`${THM[mo]} ${yr+543}`;
+  const tag=document.getElementById('cal-doctag');
+  tag.innerHTML=S.doc?`<div class="doc-tag">👨‍⚕️ ${S.doc} — ${S.type}</div>`:'';
+  const grid=document.getElementById('cal-grid');grid.innerHTML='';
+  THDs.forEach(d=>{const e=document.createElement('div');e.className='cal-dn';e.textContent=d;grid.appendChild(e);});
+  const fd=new Date(yr,mo,1).getDay(),dim=new Date(yr,mo+1,0).getDate();
+  const today=new Date();today.setHours(0,0,0,0);
+  const hols=DB.H(),holEn=DB.hEn();
+  for(let i=0;i<fd;i++){const e=document.createElement('div');e.className='cal-d emp';grid.appendChild(e);}
+  for(let day=1;day<=dim;day++){
+    const d=new Date(yr,mo,day),dateStr=ds(d);
+    const isToday=d.getTime()===today.getTime(),isPast=d<today;
+    const isH=holEn&&hols.some(h=>h.d===dateStr),isSun=d.getDay()===0;
+    const av=!isPast&&!isSun&&!isH&&isAvDay(d),isSel=S.date===dateStr;
+    const el=document.createElement('div');
+    let cls='cal-d';
+    if(isH)cls+=' hol';else if(isSun||isPast||!av)cls+=' na';else cls+=' av';
+    if(isSel)cls+=' sel';if(isToday)cls+=' tod';
+    el.className=cls;
+    el.innerHTML=`<div class="dn">${day}</div><div class="dot"></div>`;
+    if(av)el.onclick=()=>selDate(dateStr,el);
+    grid.appendChild(el);
+  }
+}
+function chMo(d){
+  S.calM+=d;if(S.calM<0){S.calM=11;S.calY--;}if(S.calM>11){S.calM=0;S.calY++;}
+  S.date=null;renderCal();document.getElementById('slot-sec').classList.add('hidden');
+}
+function selDate(dateStr,el){
+  S.date=dateStr;
+  document.querySelectorAll('.cal-d.sel').forEach(x=>x.classList.remove('sel'));
+  el.classList.add('sel');renderSlot(dateStr);
+  document.getElementById('slot-sec').classList.remove('hidden');
+}
+function renderSlot(dateStr){
+  const cnt=cntSlot(dateStr,'07:30'),max=qMax(dateStr,'0730');
+  const full=cnt>=max,pct=Math.round(cnt/max*100);
+  const bc=full?'bar-f':pct>=60?'bar-w':'bar-ok';
+  const st=full?`⛔ เต็มแล้ว (${cnt}/${max})`:pct>=60?`⚠️ เหลือ ${max-cnt} คิว`:`✅ ว่าง ${max-cnt} คิว`;
+  const sc=full?'st-f':pct>=60?'st-w':'st-ok';
+  S.time='07:30';
+  document.getElementById('slot-box').innerHTML=`
+    <div class="ts-box sel">
+      <div class="ts-t">🕐 07:30 น.</div>
+      <div class="ts-tag">ในเวลาราชการ</div>
+      <div class="ts-bar-w"><div class="ts-bar ${bc}" style="width:${Math.min(pct,100)}%"></div></div>
+      <div class="ts-ct">${cnt}/${max} คิว</div>
+      <div class="ts-st ${sc}">${st}</div>
+    </div>${full?'<div class="alert a-err" style="margin-top:12px;">⛔ เต็มแล้ว กรุณาเลือกวันอื่น</div>':''}`;
+  if(full)S.date=null;
+}
+
+function buildSum(){
+  const[y,m,d]=S.date.split('-').map(Number);
+  const dObj=new Date(y,m-1,d);
+  const dd=`วัน${THDl[dObj.getDay()]}ที่ ${d} ${THM[m-1]} ${y+543}`;
+  const rows=[
+    {l:'ชื่อ-นามสกุล',v:S.nm},{l:'อายุ',v:S.ag+' ปี'},
+    {l:'เบอร์โทร',v:S.ph},
+    {l:'ค่าสายตาขวา',v:S.rv.label||'—'},{l:'ค่าสายตาซ้าย',v:S.lv.label||'—'},
+    {l:'โรคประจำตัว',v:S.diseases.length?S.diseases.join(', '):'ไม่มี'},
+    {l:'ยาที่ใช้ประจำ',v:S.meds.length?S.meds.join(', '):'ไม่มี'},
+    {l:'แพทย์',v:S.doc},{l:'รูปแบบ',v:S.type},
+    {l:'วันนัดหมาย',v:dd},{l:'เวลา',v:'07:30 น.'},
+  ];
+  document.getElementById('sum-ct').innerHTML=rows.map((r,i)=>`
+    <div><div class="sum-l">${r.l}</div><div class="sum-v">${r.v}</div></div>
+    ${i%2===1&&i<rows.length-1?'<hr class="sum-div">':''}
+  `).join('');
+}
+
+async function saveApt() {
+  if (!S.date) return;
+  if (cntSlot(S.date,'07:30') >= qMax(S.date,'0730')) {
+    alert('เต็มแล้ว กรุณาเลือกวันอื่น'); return;
+  }
+  const id = genId();
+  const apt = {
+    id, nm:S.nm, ag:S.ag, ph:S.ph, em:S.em,
+    rv:S.rv, lv:S.lv,
+    diseases:S.diseases, meds:S.meds,
+    doc:S.doc, type:S.type,
+    date:S.date, time:'07:30',
+    status:'pending', note:'',
+    created: new Date().toISOString()
+  };
+
+  // บันทึกใน localStorage ก่อน (ใช้งานได้แม้ offline)
+  const apts = DB.A();
+  apts.push(apt);
+  DB.sA(apts);
+
+  // ส่งไป Google Sheets
+  try {
+    const res = await fetch(GAS_URL, {
+      method: 'POST',
+      body: JSON.stringify({ action: 'save', apt }),
+    });
+    const result = await res.json();
+    if (!result.saved) throw new Error(result.error);
+    console.log('บันทึกลง Sheet สำเร็จ:', id);
+  } catch(err) {
+    console.warn('Sheet error (ข้อมูลอยู่ใน localStorage แล้ว):', err.message);
+  }
+
+  document.getElementById('pop-ref').textContent = 'รหัสนัด: ' + id;
+  document.getElementById('ov-ok').classList.add('on');
+}
+
+function closeOk(){
+  document.getElementById('ov-ok').classList.remove('on');
+  resetBookForm();setStep(1);
+}
+function resetBookForm(){
+  ['f-nm','f-ag','f-ph','f-em'].forEach(x=>document.getElementById(x).value='');
+  ['rv-sph','rv-cyl','lv-sph','lv-cyl'].forEach(x=>document.getElementById(x).value='');
+  ['rv-hint','lv-hint'].forEach(x=>document.getElementById(x).textContent='');
+  visionUnknown={rv:false,lv:false};
+  ['rv','lv'].forEach(s=>{
+    const cb=document.getElementById(s+'-unk');cb.checked=false;
+    document.getElementById(s+'-unk-lbl').classList.remove('on');
+    [s+'-sph',s+'-cyl'].forEach(i=>{const el=document.getElementById(i);el.disabled=false;el.style.opacity='1';});
+    document.getElementById(s+'-hint').textContent='';
+  });
+  document.querySelectorAll('#dis-grp input,#med-grp input').forEach(x=>{x.checked=false;x.parentElement.classList.remove('on');});
+  document.getElementById('dis-other-wrap').classList.remove('show');document.getElementById('dis-other-text').value='';
+  document.getElementById('med-custom-wrap').classList.remove('show');customMeds=[];renderMedTags();
+  document.querySelectorAll('.rchip').forEach(x=>x.classList.remove('on'));
+  document.getElementById('surg-opt').classList.remove('dis');
+  document.getElementById('doc-note').classList.add('hidden');document.getElementById('type-note').classList.add('hidden');
+  document.getElementById('slot-sec').classList.add('hidden');
+  document.getElementById('cb-consent').checked=false;document.getElementById('btn-save').disabled=true;
+  S={...S,nm:'',ag:'',ph:'',em:'',rv:{},lv:{},diseases:[],meds:[],doc:'',type:'',date:null,time:'07:30'};
+}
+
+async function syncFromSheet() {
+  try {
+    const res = await fetch(GAS_URL, {
+      method: 'POST',
+      body: JSON.stringify({ action: 'getAll' }),
+    });
+    const result = await res.json();
+    if (result.apts) {
+      // แปลง header ใน Sheet ให้ตรงกับโครงสร้างในโค้ด
+      const mapped = result.apts.map(r => ({
+        id: r.id, nm: r.nm, ag: r.ag,
+        ph: r.ph, em: r.em,
+        rv: { sph: r.rv_sph, cyl: r.rv_cyl, label: '' },
+        lv: { sph: r.lv_sph, cyl: r.lv_cyl, label: '' },
+        diseases: r.diseases ? r.diseases.split(', ') : [],
+        meds: r.meds ? r.meds.split(', ') : [],
+        doc: r.doc, type: r.type,
+        date: r.date, time: r.time,
+        status: r.status, note: r.note,
+        created: r.created
+      }));
+      DB.sA(mapped);
+      renderTbl();
+      renderStats();
+      alert('ซิงค์จาก Sheet สำเร็จ ' + mapped.length + ' รายการ');
+    }
+  } catch(err) {
+    alert('ซิงค์ไม่สำเร็จ: ' + err.message);
+  }
+}
+
+// เรียกใช้: syncFromSheet() หรือเพิ่มปุ่มในแอดมิน
+function doCheck(){
+  const ph=document.getElementById('ck-ph').value.trim();
+  if(!ph){alert('กรุณากรอกเบอร์โทร');return;}
+  const apts=DB.A().filter(a=>a.ph===ph||a.phone===ph);
+  const el=document.getElementById('ck-result');el.classList.remove('hidden');
+  if(!apts.length){el.innerHTML='<div style="padding:24px;text-align:center;color:var(--tx3);">🔍 ไม่พบนัดหมายสำหรับเบอร์นี้</div>';return;}
+  const instr=DB.I();
+  el.innerHTML=apts.sort((a,b)=>b.created.localeCompare(a.created)).map(a=>{
+    const[y,m,d]=(a.date||'').split('-').map(Number);
+    const dObj=new Date(y,m-1,d);
+    const dd=`วัน${THDl[dObj.getDay()]}ที่ ${d} ${THM[m-1]} ${y+543}`;
+    const sl={pending:'⏳ รอยืนยัน',confirmed:'✅ ยืนยันแล้ว',cancelled:'❌ ยกเลิก',rescheduled:'📅 เลื่อนนัด'};
+    const isSurg=(a.type||a.aptType)==='ตรวจเช้าผ่าตัดเย็น';
+    const instrTxt=isSurg?instr.surg:instr.exam;
+    return`<div class="apt-card">
+      <div class="apt-hdr"><div class="apt-ref">รหัสนัด: ${a.id}</div><span class="apt-st ${a.status}">${sl[a.status]||a.status}</span></div>
+      <div class="apt-name">${a.nm||a.name}</div>
+      <div class="apt-info">📅 ${dd} เวลา ${a.time} น.<br>👨‍⚕️ ${a.doc||a.doctor} · ${a.type||a.aptType}</div>
+      <div class="instr-card ${isSurg?'surg':''}">
+        <div class="instr-title">${isSurg?'🔪 คำแนะนำตรวจเช้าผ่าตัดเย็น':'🔬 คำแนะนำตรวจอย่างเดียว'}</div>
+        <ul class="instr-list">${instrTxt.split('\n').filter(Boolean).map(l=>`<li>${l.replace(/^\d+\.\s*/,'')}</li>`).join('')}</ul>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ADMIN
+function admLogin(){
+  const u=document.getElementById('adm-u').value,p=document.getElementById('adm-pw').value;
+  if(u==='KLANG'&&p==='LASIK'){
+    document.getElementById('adm-login').classList.add('hidden');
+    document.getElementById('adm-dash').classList.remove('hidden');
+    renderStats();renderTbl();syncHolToggle();renderHolGrid();loadInstrEditor();
+    const today=ds(new Date());document.getElementById('qm-date').value=today;renderQM();
+  } else document.getElementById('adm-err').classList.remove('hidden');
+}
+function admLogout(){
+  document.getElementById('adm-login').classList.remove('hidden');
+  document.getElementById('adm-dash').classList.add('hidden');
+  ['adm-u','adm-pw'].forEach(x=>document.getElementById(x).value='');
+  document.getElementById('adm-err').classList.add('hidden');
+}
+function admTab(tab,el){
+  document.querySelectorAll('#adm-dash .card .tabs .tab').forEach(x=>x.classList.remove('on'));
+  el.classList.add('on');
+  ['apts','manual','queue','instr','hols','line-adm'].forEach(t=>document.getElementById('tab-'+t).classList.toggle('hidden',t!==tab));
+  if(tab==='hols'){renderHolGrid();syncHolToggle();}
+  if(tab==='instr')loadInstrEditor();
+  if(tab==='queue'){const today=ds(new Date());if(!document.getElementById('qm-date').value)document.getElementById('qm-date').value=today;renderQM();}
+  if(tab==='line-adm'){loadTestTokens();renderSendLog();}
+}
+function renderStats(){
+  const a=DB.A(),today=ds(new Date());
+  const ss=[{n:a.length,l:'นัดทั้งหมด',i:'📅'},{n:a.filter(x=>x.date===today).length,l:'นัดวันนี้',i:'📆'},{n:a.filter(x=>x.status==='pending').length,l:'รอยืนยัน',i:'⏳'},{n:a.filter(x=>x.status==='confirmed').length,l:'ยืนยันแล้ว',i:'✅'}];
+  const el=document.getElementById('adm-stats');
+  if(el)el.innerHTML=ss.map(s=>`<div class="dash-stat"><div style="font-size:26px;margin-bottom:5px">${s.i}</div><div class="dash-num">${s.n}</div><div class="dash-lbl">${s.l}</div></div>`).join('');
+}
+function renderTbl(){
+  let apts=DB.A();
+  const q=(document.getElementById('adm-q')||{value:''}).value.toLowerCase();
+  const fd=(document.getElementById('adm-fd')||{value:''}).value;
+  const fs=(document.getElementById('adm-fs')||{value:''}).value;
+  if(q)apts=apts.filter(a=>(a.nm||a.name||'').toLowerCase().includes(q)||(a.ph||a.phone||'').includes(q));
+  if(fd)apts=apts.filter(a=>(a.doc||a.doctor)===fd);
+  if(fs)apts=apts.filter(a=>a.status===fs);
+  apts.sort((a,b)=>a.date.localeCompare(b.date));
+  const tb=document.getElementById('adm-tbody'),nd=document.getElementById('adm-nodata');
+  if(!apts.length){tb.innerHTML='';nd.classList.remove('hidden');return;}
+  nd.classList.add('hidden');
+  const sm={pending:'b-pend',confirmed:'b-conf',cancelled:'b-canc',rescheduled:'b-res'};
+  const sl={pending:'รอยืนยัน',confirmed:'ยืนยันแล้ว',cancelled:'ยกเลิก',rescheduled:'เลื่อนนัด'};
+  tb.innerHTML=apts.map(a=>{
+    const[y,m,d]=(a.date||'').split('-').map(Number);
+    const dObj=new Date(y,m-1,d);
+    const dd=`${THDs[dObj.getDay()]} ${d}/${m}/${y+543}`;
+    return`<tr>
+      <td><strong>${a.id}</strong></td>
+      <td>${a.nm||a.name||''}<br><span style="font-size:11.5px;color:var(--tx3)">อายุ ${a.ag||a.age||''} ปี</span></td>
+      <td>${a.ph||a.phone||''}</td>
+      <td>${a.doc||a.doctor||''}</td>
+      <td>${dd}</td>
+      <td>${(a.type||a.aptType)==='ตรวจเช้าผ่าตัดเย็น'?'🔪 ผ่าตัด':'🔬 ตรวจ'}</td>
+      <td><span class="badge ${sm[a.status]||'b-pend'}">${sl[a.status]||a.status}</span></td>
+      <td style="display:flex;gap:5px;flex-wrap:wrap;">
+        ${a.status==='pending'?`<button class="btn btn-g btn-sm" onclick="chSt('${a.id}','confirmed')">✅</button>`:''}
+        ${a.status!=='cancelled'?`<button class="btn btn-d btn-sm" onclick="chSt('${a.id}','cancelled')">❌</button>`:''}
+        ${a.status!=='cancelled'?`<button class="btn btn-w btn-sm" onclick="openRes('${a.id}')">📅</button>`:''}
+      </td>
+    </tr>`;
+  }).join('');
+  renderStats();
+}
+
+function chSt(id, ns) {
+  document.getElementById('cfm-t').textContent =
+    (ns==='confirmed'?'ยืนยัน':'ยกเลิก') + 'นัดหมาย?';
+  document.getElementById('cfm-b').textContent = 'รหัสนัด ' + id;
+  document.getElementById('cfm-ok').onclick = async () => {
+    // อัปเดตใน localStorage
+    const a = DB.A();
+    const apt = a.find(x => x.id === id);
+    if (apt) apt.status = ns;
+    DB.sA(a);
+    closeCfm();
+    renderTbl();
+
+    // อัปเดตใน Google Sheet
+    try {
+      await fetch(GAS_URL, {
+        method: 'POST',
+        body: JSON.stringify({ action:'updateStatus', id, status:ns }),
+      });
+    } catch(err) {
+      console.warn('อัปเดต Sheet ไม่สำเร็จ:', err.message);
+    }
+  };
+  document.getElementById('ov-cfm').classList.add('on');
+}
+
+function closeCfm(){document.getElementById('ov-cfm').classList.remove('on');}
+
+function openRes(id){resId=id;document.getElementById('ov-res').classList.add('on');}
+function closeRes(){document.getElementById('ov-res').classList.remove('on');resId='';}
+function doReschedule(){
+  const newDt=document.getElementById('res-dt').value;
+  const newTm=document.getElementById('res-tm').value;
+  const reason=document.getElementById('res-reason').value;
+  if(!newDt){alert('กรุณาเลือกวันที่ใหม่');return;}
+  const a=DB.A(),apt=a.find(x=>x.id===resId);
+  if(apt){apt.date=newDt;apt.time=newTm;apt.status='rescheduled';apt.note=(apt.note||'')+` [เลื่อนนัด${reason?': '+reason:''}]`;}
+  DB.sA(a);closeRes();renderTbl();
+  document.getElementById('res-dt').value='';document.getElementById('res-reason').value='';
+}
+
+function manualApt(){
+  const nm=document.getElementById('mn-nm').value.trim(),ag=document.getElementById('mn-ag').value;
+  const ph=document.getElementById('mn-ph').value,doc=document.getElementById('mn-doc').value;
+  const type=document.getElementById('mn-type').value,dt=document.getElementById('mn-dt').value;
+  const tm=document.getElementById('mn-tm').value;
+  const err=document.getElementById('mn-err');
+  if(!nm||!ag||!ph||!doc||!type||!dt){err.textContent='กรุณากรอกข้อมูลที่จำเป็นให้ครบ';err.classList.remove('hidden');return;}
+  err.classList.add('hidden');
+  const id=genId();
+  const apts=DB.A();
+  apts.push({id,nm,ag,ph,em:document.getElementById('mn-em').value,rv:{sph:'',cyl:'',label:''},lv:{sph:'',cyl:'',label:''},diseases:[],meds:[],doc,type,date:dt,time:tm,status:'confirmed',note:'',created:new Date().toISOString(),manual:true});
+  DB.sA(apts);
+  ['mn-nm','mn-ag','mn-ph','mn-em'].forEach(x=>document.getElementById(x).value='');
+  document.getElementById('mn-doc').value='';document.getElementById('mn-type').value='';document.getElementById('mn-dt').value='';
+  renderTbl();
+  const ok=document.createElement('div');ok.className='alert a-ok';ok.textContent=`✅ บันทึกเรียบร้อย รหัส: ${id}`;
+  document.getElementById('mn-err').insertAdjacentElement('afterend',ok);
+  setTimeout(()=>ok.remove(),3500);
+}
+
+function renderQM(){
+  const dateStr=document.getElementById('qm-date').value||ds(new Date());
+  const q=DB.Q();
+  ['0730','1400'].forEach(slot=>{
+    const max=(q[dateStr]&&q[dateStr][slot])||5;
+    const closed=isSlotClosed(dateStr,slot);
+    const used=cntSlot(dateStr,slot==='0730'?'07:30':'14:00');
+    const el=document.getElementById('qm-'+slot);if(el)el.textContent=max;
+    const usedEl=document.getElementById('qm-'+slot+'-used');if(usedEl)usedEl.textContent=`(ใช้แล้ว ${used}/${max})`;
+    const btn=document.getElementById('stog-'+slot);
+    const body=document.getElementById('qm-body-'+slot);
+    const closedMsg=document.getElementById('qm-closed-'+slot);
+    const card=document.getElementById('qm-card-'+slot);
+    if(btn){btn.className='slot-tog-btn'+(closed?' closed':'');btn.innerHTML=closed?'<span>⛔</span><span>ปิดรับ</span>':'<span>✅</span><span>เปิดรับ</span>';}
+    if(body)body.classList.toggle('hidden',closed);
+    if(closedMsg)closedMsg.classList.toggle('hidden',!closed);
+    if(card)card.classList.toggle('closed-day',closed);
+  });
+}
+function adjQ(slot,delta){
+  const dateStr=document.getElementById('qm-date').value||ds(new Date());
+  const q=DB.Q();if(!q[dateStr])q[dateStr]={};
+  q[dateStr][slot]=Math.max(1,Math.min(20,(q[dateStr][slot]||5)+delta));
+  DB.sQ(q);renderQM();
+}
+function togSlot(slot){
+  const dateStr=document.getElementById('qm-date').value||ds(new Date());
+  const q=DB.Q();if(!q[dateStr])q[dateStr]={};
+  q[dateStr][slot+'_closed']=!q[dateStr][slot+'_closed'];
+  DB.sQ(q);renderQM();
+}
+function saveQM(){
+  document.getElementById('qm-ok').textContent='✅ บันทึกเรียบร้อย';
+  document.getElementById('qm-ok').classList.remove('hidden');
+  setTimeout(()=>document.getElementById('qm-ok').classList.add('hidden'),2500);
+}
+
+function loadInstrEditor(){
+  const i=DB.I();
+  document.getElementById('instr-exam').value=i.exam;
+  document.getElementById('instr-surg').value=i.surg;
+}
+function saveInstr(){
+  DB.sI({exam:document.getElementById('instr-exam').value,surg:document.getElementById('instr-surg').value});
+  document.getElementById('instr-ok').classList.remove('hidden');
+  setTimeout(()=>document.getElementById('instr-ok').classList.add('hidden'),2500);
+}
+
+function syncHolToggle(){
+  const en=DB.hEn();
+  const t=document.getElementById('hol-tog');if(t)t.checked=en;
+  const l=document.getElementById('hol-tog-lbl');if(l)l.textContent=en?'ปิดบริการวันหยุดนักขัตฤกษ์':'เปิดบริการในวันหยุด';
+}
+function onHolTog(){DB.sHEn(document.getElementById('hol-tog').checked);syncHolToggle();}
+function renderHolGrid(){
+  const hols=DB.H().sort((a,b)=>a.d.localeCompare(b.d));
+  const cnt=document.getElementById('hol-cnt');if(cnt)cnt.textContent=hols.length;
+  const grid=document.getElementById('hol-grid');if(!grid)return;
+  grid.innerHTML=hols.map((h,i)=>{
+    const[y,m,d]=h.d.split('-').map(Number);
+    return`<div class="hol-item">
+      <input type="checkbox" checked onchange="if(!this.checked)delHol(${i})">
+      <div class="hol-info"><div class="hol-date">${d} ${THM[m-1].slice(0,3)} ${y+543}</div><div class="hol-name">${h.n}</div></div>
+      <button class="hol-del" onclick="delHol(${i})">✕</button>
+    </div>`;
+  }).join('');
+}
+function delHol(i){const h=DB.H();h.splice(i,1);DB.sH(h);renderHolGrid();}
+function addHol(){
+  const d=document.getElementById('hol-nd').value,n=document.getElementById('hol-nn').value.trim();
+  if(!d||!n)return;
+  const h=DB.H();if(h.some(x=>x.d===d)){alert('วันนี้มีแล้ว');return;}
+  h.push({d,n});DB.sH(h);
+  document.getElementById('hol-nd').value='';document.getElementById('hol-nn').value='';
+  renderHolGrid();
+}
+
+function quickSearch(){
+  const q=document.getElementById('quick-search').value.trim();
+  if(!q)return;
+  const apts=DB.A().filter(a=>a.id===q||(a.ph||'').includes(q)||(a.nm||'').includes(q));
+  const el=document.getElementById('quick-result');
+  if(!apts.length){el.innerHTML='<div style="color:var(--tx3);font-size:13px;">ไม่พบ</div>';return;}
+  el.innerHTML=apts.slice(0,5).map(a=>{
+    const[y,m,d]=(a.date||'').split('-').map(Number);
+    const dObj=new Date(y,m-1,d);
+    return`<div class="ln-apt-row">
+      <div style="flex:1;"><div class="la-nm">${a.nm||a.name} <span style="font-size:12px;color:var(--tx3);">${a.id}</span></div>
+      <div class="la-dt">📅 ${d} ${THM[m-1]} ${y+543} ${a.time} น. · ${a.doc||a.doctor}</div></div>
+      <button class="btn btn-line btn-sm" onclick="sendQuickRemind('${a.id}')">📤 ส่ง LINE</button>
+    </div>`;
+  }).join('');
+}
+
+async function sendQuickRemind(id){
+  const apt=DB.A().find(a=>a.id===id);if(!apt)return;
+  const ln=DB.LN();
+  if(!ln.token||!ln.to){
+    alert('ยังไม่ได้ตั้งค่า Token และ userId กรุณาตั้งค่าในหน้า "คู่มือ Line API" → ตั้งค่า');return;
+  }
+  const[y,m,d]=(apt.date||'').split('-').map(Number);
+  const dObj=new Date(y,m-1,d);
+  const msg=`🏥 เตือนความจำ!\nคุณ ${apt.nm||apt.name} มีนัดตรวจตา LASIK\n📅 วัน${THDl[dObj.getDay()]}ที่ ${d} ${THM[m-1]} ${y+543} เวลา ${apt.time} น.\n👨‍⚕️ แพทย์: ${apt.doc||apt.doctor}\n📋 รูปแบบ: ${apt.type||apt.aptType}\n🔢 รหัสนัด: ${apt.id}\n\nกรุณามาก่อนเวลา 10 นาที 🙏`;
+  await sendLineMsg(ln.token,ln.to,msg,'ส่งแจ้งเตือน: '+apt.nm);
+}
+
+// ============================================================
+// LINE API GUIDE FUNCTIONS
+// ============================================================
+
+function lineTab(tab,el){
+  document.querySelectorAll('#ltabs .tab').forEach(x=>x.classList.remove('on'));
+  el.classList.add('on');
+  ['overview','setup','templates','test','faq'].forEach(t=>document.getElementById('ltab-'+t).classList.toggle('hidden',t!==tab));
+  if(tab==='test'){loadTestTokens();renderSendLog();}
+}
+
+function selCh(el,type){
+  document.querySelectorAll('.ch-card').forEach(x=>x.classList.remove('active'));
+  el.classList.add('active');
+  ['ch-detail-notify','ch-detail-messaging','ch-detail-oa'].forEach(id=>document.getElementById(id).classList.add('hidden'));
+  document.getElementById('ch-detail-'+type).classList.remove('hidden');
+}
+
+function codeTab(tab,el){
+  const parent=el.parentElement;
+  parent.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));
+  el.classList.add('on');
+  ['code-js','code-python','code-gas','code-php'].forEach(id=>{
+    const e=document.getElementById(id);if(e)e.classList.toggle('hidden',id!=='code-'+tab);
+  });
+}
+
+function copyCode(id){
+  const el=document.getElementById(id);
+  if(!el)return;
+  const text=el.querySelector('pre').innerText;
+  navigator.clipboard.writeText(text).then(()=>{
+    addLog('ok','📋 คัดลอกโค้ดแล้ว','📋');renderSendLog();
+  }).catch(()=>alert('กรุณาคัดลอกด้วยตนเอง'));
+}
+
+function updateMsgPreview(){
+  const txt=document.getElementById('tpl-custom').value;
+  const preview=txt
+    .replace(/{ชื่อ}/g,'สมชาย ใจดี')
+    .replace(/{วันที่}/g,'15 พฤษภาคม 2568')
+    .replace(/{เวลา}/g,'07:30')
+    .replace(/{แพทย์}/g,'พ.เมธินี')
+    .replace(/{รูปแบบ}/g,'ตรวจเช้าผ่าตัดเย็น')
+    .replace(/{รหัสนัด}/g,'L10000001')
+    .replace(/{อายุ}/g,'35')
+    .replace(/{โทร}/g,'081-234-5678');
+  document.getElementById('msg-preview-text').textContent=preview;
+}
+
+function toggleVis(id,btn){
+  const inp=document.getElementById(id);
+  if(!inp)return;
+  if(inp.type==='password'){inp.type='text';btn.textContent='🙈';}
+  else{inp.type='password';btn.textContent='👁';}
+}
+
+function saveSetupToken(){
+  const token=document.getElementById('setup-token').value.trim();
+  const to=document.getElementById('setup-to').value.trim();
+  if(!token||!to){alert('กรุณากรอก Token และ userId/groupId');return;}
+  const ln=DB.LN();ln.token=token;ln.to=to;DB.sLN(ln);
+  // Sync to test tab
+  const tt=document.getElementById('test-token');if(tt)tt.value=token;
+  const tto=document.getElementById('test-to');if(tto)tto.value=to;
+  document.getElementById('setup-save-ok').classList.remove('hidden');
+  setTimeout(()=>document.getElementById('setup-save-ok').classList.add('hidden'),2500);
+  checkTokenStatus();
+}
+
+function loadTestTokens(){
+  const ln=DB.LN();
+  const tt=document.getElementById('test-token');if(tt&&ln.token)tt.value=ln.token;
+  const tto=document.getElementById('test-to');if(tto&&ln.to)tto.value=ln.to;
+  checkTokenStatus();
+}
+
+function checkTokenStatus(){
+  const token=(document.getElementById('test-token')||{value:''}).value.trim()||DB.LN().token;
+  const to=(document.getElementById('test-to')||{value:''}).value.trim()||DB.LN().to;
+  const bar=document.getElementById('api-status-bar');
+  const sub=document.getElementById('api-status-sub');
+  const badge=document.getElementById('api-status-badge');
+  if(!bar)return;
+  const ready=!!(token&&to);
+  bar.className='line-status-bar'+(ready?'':' inactive');
+  if(sub)sub.textContent=ready?'Token พร้อมใช้งาน — กด "ส่งข้อความทดสอบ" เพื่อตรวจสอบ':'ยังไม่ได้ตั้งค่า — ไปที่แท็บ "ตั้งค่า" ก่อน';
+  if(badge)badge.textContent=ready?'พร้อมใช้งาน':'ยังไม่พร้อม';
+}
+
+async function doSendMsg(){
+  const token=document.getElementById('test-token').value.trim();
+  const to=document.getElementById('test-to').value.trim();
+  const msg=document.getElementById('test-msg').value.trim();
+  if(!token||!to||!msg){alert('กรุณากรอก Token, To, และข้อความ');return;}
+  const result=document.getElementById('test-result');
+  result.className='api-result';result.textContent='กำลังส่ง...';
+  const ok=await sendLineMsg(token,to,msg,'ทดสอบส่งข้อความ');
+  renderSendLog();
+}
+
+async function sendLineMsg(token,to,message,label){
+  const result=document.getElementById('test-result');
+  try{
+    const res=await fetch('https://api.line.me/v2/bot/message/push',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
+      body:JSON.stringify({to,messages:[{type:'text',text:message}]})
+    });
+    const data=await res.json();
+    if(res.ok){
+      if(result){result.className='api-result ok';result.textContent='✅ ส่งสำเร็จ!\nHTTP 200\n'+JSON.stringify(data,null,2);}
+      addLog('ok','✅ ส่งสำเร็จ: '+label,'✅');
+      return true;
+    } else {
+      const errMsg=`❌ ส่งไม่สำเร็จ HTTP ${res.status}\n${JSON.stringify(data,null,2)}`;
+      if(result){result.className='api-result err';result.textContent=errMsg;}
+      addLog('err','❌ ส่งไม่สำเร็จ ('+res.status+'): '+label,'❌');
+      return false;
+    }
+  }catch(e){
+    const msg='❌ เชื่อมต่อไม่ได้: '+e.message+'\n\nอาจเกิดจาก CORS — ในการใช้งานจริงต้องเรียก API จาก Server (Node.js, Python, PHP) หรือ Google Apps Script ไม่ใช่จาก Browser โดยตรง';
+    if(result){result.className='api-result err';result.textContent=msg;}
+    addLog('warn','⚠️ CORS Error — ใช้งานจาก Server ในชีวิตจริง: '+label,'⚠️');
+    return false;
+  }
+}
+
+function addLog(type,msg,icon){
+  const log=DB.Log();
+  log.unshift({type,msg,icon,ts:new Date().toLocaleTimeString('th-TH')});
+  DB.sLog(log);renderSendLog();
+}
+function renderSendLog(){
+  const log=DB.Log();
+  const el=document.getElementById('send-log');if(!el)return;
+  if(!log.length){el.innerHTML='<div style="text-align:center;color:var(--tx3);padding:20px;font-size:13px;">ยังไม่มีประวัติการส่ง</div>';return;}
+  const typeClass={ok:'ln-log-ok',err:'ln-log-err',warn:'ln-log-warn',info:''};
+  el.innerHTML=log.map(l=>`
+    <div class="ln-log-item ${typeClass[l.type]||''}">
+      <div class="ln-log-ic">${l.icon||'📋'}</div>
+      <div class="ln-log-info">
+        <div class="ln-log-msg">${l.msg}</div>
+        <div class="ln-log-time">${l.ts}</div>
+      </div>
+    </div>`).join('');
+}
+function clearLog(){DB.sLog([]);renderSendLog();}
+function clearTestResult(){
+  const el=document.getElementById('test-result');
+  if(el){el.className='api-result';el.textContent='ผลลัพธ์จะแสดงที่นี่...';}
+}
+
+function togFaq(item){
+  const isOpen=item.classList.contains('open');
+  document.querySelectorAll('.faq-item').forEach(x=>{x.classList.remove('open');x.querySelector('.faq-a').classList.remove('on');});
+  if(!isOpen){item.classList.add('open');item.querySelector('.faq-a').classList.add('on');}
+}
+
+// ============================================================
+// INIT
+// ============================================================
+(function(){
+  if(DB.A().length>0)return;
+  const today=ds(new Date());
+  DB.sA([
+    {id:'L10000001',nm:'สมชาย ใจดี',ag:'35',ph:'0812345678',em:'',rv:{sph:'-3.50',cyl:'-0.75',label:'สั้น -3.50D / เอียง -0.75D'},lv:{sph:'-3.00',cyl:'',label:'สั้น -3.00D'},diseases:['ไม่มีโรคประจำตัว'],meds:['ไม่มี'],doc:'พ.เมธินี',type:'ตรวจเช้าผ่าตัดเย็น',date:today,time:'07:30',status:'pending',note:'',created:new Date().toISOString()},
+    {id:'L10000002',nm:'สมหญิง รักสุขภาพ',ag:'28',ph:'0898765432',em:'',rv:{sph:'-4.00',cyl:'-1.25',label:'สั้น -4.00D / เอียง -1.25D'},lv:{sph:'-3.75',cyl:'',label:'สั้น -3.75D'},diseases:['ความดันโลหิตสูง'],meds:['ยาโรคประจำตัว'],doc:'พ.นพมาศ',type:'ตรวจอย่างเดียว',date:today,time:'07:30',status:'confirmed',note:'',created:new Date().toISOString()},
+  ]);
+})();
+</script>
+</body>
+</html>
